@@ -1,0 +1,8 @@
+:root {
+  --bz-primary: rgba(152, 111, 221, 0.8);
+  --bz-primary-light: rgba(152, 111, 221, 0.25);
+  --bz-accent: rgba(158, 251, 123, 0.8);
+  --bz-bg: #ffffff;
+  --bz-text: #111827;
+  --bz-muted: #6b7280;
+}

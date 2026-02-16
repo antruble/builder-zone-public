@@ -2,6 +2,24 @@
 import { site } from '@/content/site'
 import { formatHuf } from '@/lib/format'
 import Container from '@/components/ui/Container.vue'
+
+const categoryColors: Record<string, { bg: string; pill: string; border: string }> = {
+  Felnőtt: {
+    bg: 'rgba(152, 111, 221, 0.06)',
+    pill: 'rgba(152, 111, 221, 0.12)',
+    border: 'rgba(152, 111, 221, 0.18)',
+  },
+  Diák: {
+    bg: 'rgba(158, 251, 123, 0.07)',
+    pill: 'rgba(158, 251, 123, 0.15)',
+    border: 'rgba(158, 251, 123, 0.22)',
+  },
+  Gyerek: {
+    bg: 'rgba(0, 0, 0, 0.02)',
+    pill: 'rgba(0, 0, 0, 0.04)',
+    border: 'rgba(0, 0, 0, 0.08)',
+  },
+}
 </script>
 
 <template>
@@ -25,8 +43,15 @@ import Container from '@/components/ui/Container.vue'
                 v-for="category in site.pricing.categories"
                 :key="category"
                 class="pricing-th"
+                :style="{ backgroundColor: categoryColors[category]?.bg }"
               >
-                <span class="pricing-category-pill">{{ category }}</span>
+                <span
+                  class="pricing-category-pill"
+                  :style="{
+                    backgroundColor: categoryColors[category]?.pill,
+                    borderColor: categoryColors[category]?.border,
+                  }"
+                >{{ category }}</span>
               </th>
             </tr>
           </thead>
@@ -44,6 +69,7 @@ import Container from '@/components/ui/Container.vue'
                 v-for="category in site.pricing.categories"
                 :key="category"
                 class="pricing-td pricing-td-price"
+                :style="{ backgroundColor: categoryColors[category]?.bg }"
               >
                 {{ formatHuf(item.prices[category] ?? 0) }}
               </td>
@@ -59,7 +85,11 @@ import Container from '@/components/ui/Container.vue'
           :key="category"
           class="pricing-mobile-card"
         >
-          <div class="pricing-mobile-accent" aria-hidden="true"></div>
+          <div
+            class="pricing-mobile-accent"
+            aria-hidden="true"
+            :style="{ background: `linear-gradient(90deg, ${categoryColors[category]?.border ?? 'rgba(0,0,0,0.06)'}, transparent)` }"
+          ></div>
           <h3 class="pricing-mobile-category">{{ category }}</h3>
           <ul class="pricing-mobile-list">
             <li

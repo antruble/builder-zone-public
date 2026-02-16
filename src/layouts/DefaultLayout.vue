@@ -71,8 +71,8 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
           :class="[
             'flex items-center justify-between transition-all duration-300',
             isScrolled && !isMobile
-              ? 'max-w-6xl mx-auto px-4 h-14'
-              : 'px-5 md:px-6 h-16',
+              ? 'max-w-6xl mx-auto px-4 h-16'
+              : 'px-5 md:px-6 h-20',
           ]"
         >
           <a
@@ -87,14 +87,14 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
           <div
             :class="[
               'hidden md:flex items-center gap-1 bg-primary/90 rounded-2xl transition-all duration-300',
-              isScrolled ? 'px-4 py-2' : 'px-5 py-2.5',
+              isScrolled ? 'px-5 py-2.5' : 'px-6 py-3',
             ]"
           >
             <a
               v-for="item in site.nav.items"
               :key="item.href"
               :href="item.href"
-              class="px-3 py-1 text-sm font-medium text-white/80 hover:text-white rounded-lg transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+              class="px-4 py-1.5 text-lg font-medium text-white/80 hover:text-white rounded-lg transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
               @click.prevent="handleNavClick(item.href)"
             >
               {{ item.label }}

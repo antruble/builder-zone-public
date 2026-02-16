@@ -1,34 +1,24 @@
 <script setup lang="ts">
 import type { DifficultyLevel } from '@/content/site'
 
+import zaszloImg from '@/assets/img/zaszlo.jpg'
+import cipoImg from '@/assets/img/cipo.jpg'
+import karImg from '@/assets/img/kar.jpg'
+import fogaskerekImg from '@/assets/img/fogaskerek.jpg'
+import tuzImg from '@/assets/img/tuz.jpg'
+import magnusImg from '@/assets/img/magnus.jpg'
+
 defineProps<{
   levels: DifficultyLevel[]
 }>()
 
-// Minimal inline SVG paths mapped by level name
-const icons: Record<string, string> = {
-  Rajtzászló:
-    'M5 3v18M5 3h9l-1.5 4L14 11H5',
-  'Mászó cipőnyomok':
-    'M8 21h2l1-3h2l1 3h2M9 18l-1-5 2-3 2 1 2-1 2 3-1 5',
-  'Feszített bicepszes kar':
-    'M7 17l2-4 3 2 3-6 2 1M5 20a8 8 0 0 1 2-12M17 8a4 4 0 0 1 0 8',
-  Fogaskerék:
-    'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41',
-  Tűz:
-    'M12 2c.5 4-3 6-3 10a5 5 0 0 0 10 0c0-4-3-5.5-3-10M10 15a2 2 0 0 0 4 0c0-2-2-3-2-5s2 3 2 5',
-  'Magnus Midtbo':
-    'M2 18l4-8 4 4 4-10 4 10 4-4 4 8H2z',
-}
-
-// Difficulty color scale: mint → teal → blue → indigo → amber → crimson
-const levelStyles = [
-  { color: '76, 175, 100',  label: 'Kezdő' },        // soft green
-  { color: '56, 166, 155',  label: 'Haladó kezdő' },  // teal
-  { color: '66, 133, 200',  label: 'Középhaladó' },   // blue
-  { color: '100, 80, 180',  label: 'Haladó' },        // indigo
-  { color: '210, 130, 50',  label: 'Tapasztalt' },     // amber
-  { color: '190, 50, 70',   label: 'Elit' },           // crimson
+const levelStyles: { color: string; img: string }[] = [
+  { color: '255, 255, 255', img: zaszloImg },      // fehér
+  { color: '66, 133, 244', img: cipoImg },          // kék
+  { color: '234, 179, 8', img: karImg },             // sárga
+  { color: '76, 175, 100', img: fogaskerekImg },     // zöld
+  { color: '220, 50, 50', img: tuzImg },             // piros
+  { color: '55, 55, 55', img: magnusImg },           // fekete/sötétszürke
 ]
 </script>
 
@@ -46,17 +36,11 @@ const levelStyles = [
       <div class="diff-card-inner">
         <div class="diff-header">
           <span class="diff-badge">
-            <svg
-              class="diff-icon"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              viewBox="0 0 24 24"
-            >
-              <path :d="icons[level.name] ?? 'M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z'" />
-            </svg>
+            <img
+              :src="levelStyles[idx]?.img"
+              :alt="level.name"
+              class="diff-icon-img"
+            />
           </span>
           <div class="diff-title-group">
             <h3 class="diff-name">{{ level.name }}</h3>
@@ -138,20 +122,22 @@ const levelStyles = [
 /* Icon badge */
 .diff-badge {
   flex-shrink: 0;
-  width: 2.35rem;
-  height: 2.35rem;
+  width: 2.8rem;
+  height: 2.8rem;
   border-radius: 0.7rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   background: rgba(var(--lvl), 0.1);
   border: 1px solid rgba(var(--lvl), 0.1);
 }
 
-.diff-icon {
-  width: 1.15rem;
-  height: 1.15rem;
-  color: rgba(var(--lvl), 1);
+.diff-icon-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
 }
 
 /* Title */

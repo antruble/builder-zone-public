@@ -144,9 +144,7 @@ export const site: SiteContent = {
       'Közösségi tér kicsiknek és nagyoknak.',
       'Találkozunk a falakon.',
     ],
-    mission:
-      'Ez a terem azért jött létre, mert hiszünk abban, hogy a mászás mindenkié. ' +
-      'Kortól, tapasztalattól, háttértől függetlenül.',
+    mission: 'A mászás mindenkié.',
     foundersIntro:
       'Mi ketten vagyunk mögötte: Zoli és Bence. Két srác, akik régóta másznak, ' +
       'gondolkodnak terekről, közösségekről, és arról, hogy milyen helyre szeretnének ' +
@@ -166,9 +164,9 @@ export const site: SiteContent = {
     title: 'Segédlet',
     intro: {
       kicker: 'Mi az a boulderezés?',
-      headline: 'Kötél nélküli sportmászás, biztonságos környezetben.',
+      headline: 'Kötél nélküli mászás, biztonságos környezetben.',
       paragraphs: [
-        'A boulderezés kötél nélküli, alacsony falon végzett sportmászás. A falak alatt vastag szivacs (crashpad) biztosítja a biztonságot.',
+        'A boulderezés kötél nélküli, alacsony falon végzett mászás. A falak alatt vastag szivacs (matrac) nyújt biztonságot esésnél.',
         'Az utak (problémák) rövid, de intenzív mozdulatsorokból állnak. Minden út egy rejtvény, amit a tested segítségével oldasz meg.',
         'Nem kell hozzá előképzettség – bárki elkezdheti, életkortól és erőnléttől függetlenül.',
       ],
@@ -180,50 +178,50 @@ export const site: SiteContent = {
       rules: [
         {
           title: 'Startfogások',
-          text: 'Az út kezdőfogásait két kézzel kell megfogni – ez a start. A startfogásokat jelölés mutatja.',
+          text: 'Az utak kezdő fogásait a nehézség jelzésére szolgáló szimbólumok mutatják. Lehet egy fogás is, amit két kézzel kell megfogni, vagy két külön fogás egy-egy kéznek. A láb helyzete nincs meghatározva.',
+        },
+        {
+          title: 'Fekete fa elemek',
+          text: 'A fekete fa elemek a fal részei, minden útban egyaránt használhatóak, fogásként és lépésként is.',
         },
         {
           title: 'Egy szín, egy út',
-          text: 'Minden út egy színű fogásokból áll – csak az adott színű fogásokat használd kézzel és lábbal egyaránt.',
-        },
-        {
-          title: 'Fekete elemek',
-          text: 'A fekete fogások és térdemelők (volumes) bármely úthoz használhatók – ezek mindenki számára szabadok.',
+          text: 'Minden útban csak az adott színű fogásokat, a fekete fa elemeket és a fal oldaléleit lehet használni. A fal tetejét segítségül venni az út teljesítéséhez tilos.',
         },
         {
           title: 'Topfogás (cél)',
-          text: 'Az út végén a topfogást két kézzel kell megérinteni – ez a cél. Ha megvan, teljesítetted az utat!',
+          text: 'A "top" fogást a céltábla szimbólum jelöli minden útnál. Ezt kell két kézzel érinteni, stabil testhelyzetben az út teljesítéséhez.',
         },
         {
-          title: 'Biztonságos lemászás',
-          text: 'Lemászni is kötelező – ugrálni tilos! Használd a lejtős fogásokat a biztonságos lemászáshoz.',
+          title: 'Lemászó fogások',
+          text: 'A szürke fogások nem tartoznak egyik útba sem, a lemászás megkönnyítésére szolgálnak.',
         },
       ],
     },
     difficultyLegend: [
       {
         name: 'Rajtzászló',
-        description: 'Kezdő – ismerkedj a mozgással, tanuld meg az alapokat.',
+        description: 'Elrajtolsz a mászás világában. Ezek az utak tökéletesek az első próbálkozásokhoz, nem igényelnek haladó technikát vagy nyers erőt. A cél: bevezetés a mászás világába.',
       },
       {
         name: 'Mászó cipőnyomok',
-        description: 'Haladó kezdő – már magabiztosabban mozogsz a falon.',
+        description: 'Megtetted az első lépéseket. Ezeken az utakon már érdemes mászócipőt használni, szükség lehet több erőfeszítésre és koncentrációra.',
       },
       {
         name: 'Feszített bicepszes kar',
-        description: 'Középhaladó – komolyabb erő és technika szükséges.',
+        description: 'Már másztál korábban, vagy sportos múltad van. Ezek az utak erőt és tudatos testkontrollt igényelnek, hogy a súlypontod és mozdulataid összhangban legyenek.',
       },
       {
         name: 'Fogaskerék',
-        description: 'Haladó – összetett mozdulatsorok és kitartás.',
+        description: 'Haladó mászó vagy. Itt már nem elég az erő és a technika: az utak igazi logikai kihívást jelentenek, a teljes tested és az elméd koordinációját kérik.',
       },
       {
         name: 'Tűz',
-        description: 'Tapasztalt – maximális erő, precizitás és kreativitás.',
+        description: 'Magas fokon égsz a mászás iránt. Ezek az utak a megszállottság és a szenvedély terepei, ahol a sport szeretete minden mozdulatodban látszik.',
       },
       {
         name: 'Magnus Midtbo',
-        description: 'Elit – csak a legjobbaknak. Ha ezt megcsinálod, kalap le!',
+        description: 'Határ a csillagos ég. Elérted azt a szintet, amin Magnus Midtbo a bemelegítéseit végzi. Büszke lehetsz a befektetett munkára: ezek az utak a csúcsot képviselik.',
       },
     ],
   },
@@ -239,7 +237,6 @@ export const site: SiteContent = {
       { name: 'Éves bérlet', prices: { Felnőtt: 250000, Diák: 200000, Gyerek: 165000 } },
     ],
     addons: [
-      { name: 'Edzésjegy', price: 1200, note: 'Edzésjegy a belépőn felül értendő.' },
       { name: 'Cipő bérlés', price: 700 },
       { name: 'Zia bérlés', price: 500 },
     ],

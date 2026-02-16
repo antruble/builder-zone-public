@@ -5,9 +5,10 @@ import Container from '@/components/ui/Container.vue'
 
 <template>
   <section id="rolunk" class="scroll-mt-28 about-section section-neutral">
-    <!-- Subtle ambient blobs (echoing hero, much softer) -->
+    <!-- Ambient blobs -->
     <div class="about-ambient about-ambient-primary" aria-hidden="true"></div>
     <div class="about-ambient about-ambient-accent" aria-hidden="true"></div>
+    <div class="about-ambient about-ambient-mid" aria-hidden="true"></div>
 
     <Container class="relative z-10">
       <!-- Section header -->
@@ -25,18 +26,6 @@ import Container from '@/components/ui/Container.vue'
           <p class="about-body">
             {{ site.about.vision }}
           </p>
-
-          <!-- Bullet highlights -->
-          <div class="about-features">
-            <div
-              v-for="(bullet, i) in site.about.bullets"
-              :key="i"
-              class="about-feature"
-            >
-              <span class="about-feature-dot" aria-hidden="true"></span>
-              <span class="about-feature-text">{{ bullet }}</span>
-            </div>
-          </div>
         </div>
 
         <!-- Right: founders glass card -->
@@ -94,30 +83,45 @@ import Container from '@/components/ui/Container.vue'
   pointer-events: none;
   border-radius: 9999px;
   filter: blur(72px);
-  opacity: 0.35;
 }
 
 .about-ambient-primary {
-  width: 28rem;
-  height: 28rem;
+  width: 32rem;
+  height: 32rem;
   top: -8rem;
   left: -10rem;
+  opacity: 0.5;
   background: radial-gradient(
     circle at 40% 40%,
-    rgba(152, 111, 221, 0.3) 0%,
+    rgba(152, 111, 221, 0.4) 0%,
     rgba(152, 111, 221, 0) 70%
   );
 }
 
 .about-ambient-accent {
-  width: 24rem;
-  height: 24rem;
+  width: 28rem;
+  height: 28rem;
   bottom: -6rem;
   right: -8rem;
+  opacity: 0.45;
   background: radial-gradient(
     circle at 50% 50%,
-    rgba(158, 251, 123, 0.25) 0%,
+    rgba(158, 251, 123, 0.35) 0%,
     rgba(158, 251, 123, 0) 70%
+  );
+}
+
+.about-ambient-mid {
+  width: 20rem;
+  height: 20rem;
+  top: 40%;
+  right: 20%;
+  opacity: 0.3;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(152, 111, 221, 0.25) 0%,
+    rgba(158, 251, 123, 0.15) 50%,
+    transparent 70%
   );
 }
 
@@ -169,40 +173,6 @@ import Container from '@/components/ui/Container.vue'
   line-height: 1.72;
   color: #4b5563;
   max-width: 36rem;
-}
-
-/* Feature bullets */
-.about-features {
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-}
-
-.about-feature {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.7rem;
-}
-
-.about-feature-dot {
-  flex-shrink: 0;
-  width: 0.42rem;
-  height: 0.42rem;
-  margin-top: 0.5rem;
-  border-radius: 9999px;
-  background: radial-gradient(
-    circle at 35% 35%,
-    rgba(158, 251, 123, 1),
-    rgba(152, 111, 221, 0.8)
-  );
-  box-shadow: 0 0 0 3px rgba(158, 251, 123, 0.1);
-}
-
-.about-feature-text {
-  font-size: 0.92rem;
-  font-weight: 500;
-  line-height: 1.55;
-  color: #374151;
 }
 
 /* Founders glass card */

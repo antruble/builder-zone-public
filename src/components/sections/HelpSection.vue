@@ -23,22 +23,6 @@ import DifficultyLegend from '@/components/sections/DifficultyLegend.vue'
           </div>
         </div>
 
-        <!-- Decorative illustration card -->
-        <div class="help-intro-visual">
-          <div class="help-visual-card">
-            <div class="help-visual-accent" aria-hidden="true"></div>
-            <div class="help-visual-content">
-              <svg class="help-visual-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M24 4v4M12 8l2.8 2.8M36 8l-2.8 2.8" />
-                <path d="M16 44h16" />
-                <path d="M20 44v-8a8 8 0 0 1-4-7V16a8 8 0 0 1 16 0v13a8 8 0 0 1-4 7v8" />
-                <circle cx="24" cy="22" r="3" />
-              </svg>
-              <span class="help-visual-label">Crashpad alattad.</span>
-              <span class="help-visual-sub">Biztonságos környezet.</span>
-            </div>
-          </div>
-        </div>
       </div>
 
       <!-- ═══ Markings / Rules ═══ -->
@@ -138,70 +122,6 @@ import DifficultyLegend from '@/components/sections/DifficultyLegend.vue'
   line-height: 1.7;
   color: #4b5563;
   margin: 0;
-}
-
-/* Visual card */
-.help-intro-visual {
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-}
-
-.help-visual-card {
-  position: relative;
-  overflow: hidden;
-  border-radius: 1.25rem;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  background:
-    linear-gradient(155deg, rgba(255, 255, 255, 0.96), rgba(248, 245, 252, 0.9));
-  box-shadow:
-    0 12px 32px rgba(0, 0, 0, 0.06),
-    0 2px 8px rgba(152, 111, 221, 0.03),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7);
-  padding: 2rem 2.5rem;
-  width: 100%;
-  max-width: 280px;
-}
-
-.help-visual-accent {
-  position: absolute;
-  top: 0;
-  left: 10%;
-  right: 10%;
-  height: 2px;
-  border-radius: 9999px;
-  background: linear-gradient(
-    90deg,
-    rgba(158, 251, 123, 0.4),
-    rgba(152, 111, 221, 0.35)
-  );
-}
-
-.help-visual-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 0.5rem;
-}
-
-.help-visual-icon {
-  width: 3rem;
-  height: 3rem;
-  color: rgba(152, 111, 221, 0.5);
-  margin-bottom: 0.5rem;
-}
-
-.help-visual-label {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #111827;
-}
-
-.help-visual-sub {
-  font-size: 0.78rem;
-  color: #9ca3af;
-  font-weight: 500;
 }
 
 /* ═══════════════════════════════════════════════
@@ -324,12 +244,6 @@ import DifficultyLegend from '@/components/sections/DifficultyLegend.vue'
 
   .help-headline {
     font-size: 1.75rem;
-  }
-
-  .help-intro {
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    gap: 3rem;
   }
 
   .help-rules-grid {

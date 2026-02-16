@@ -62,9 +62,9 @@ onBeforeUnmount(() => {
             role="dialog"
             aria-modal="true"
             :aria-label="title ?? 'Címünk'"
-            class="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-2xl"
+            class="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-2xl max-h-[90vh] overflow-y-auto overscroll-contain"
           >
-            <div class="sheet-card pb-16">
+            <div class="sheet-card pb-safe">
               <!-- Top accent gradient -->
               <div class="sheet-accent-line" aria-hidden="true"></div>
 
@@ -313,9 +313,19 @@ onBeforeUnmount(() => {
   transform: translateY(100%);
 }
 
+.pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 1rem));
+}
+
 @media (min-width: 768px) {
   .sheet-map-iframe {
     height: 540px;
+  }
+}
+
+@media (max-height: 600px) {
+  .sheet-map-iframe {
+    height: 200px;
   }
 }
 </style>

@@ -5,6 +5,7 @@ declare module 'vue-router' {
   interface RouteMeta {
     title?: string
     description?: string
+    noLayout?: boolean
   }
 }
 
@@ -17,6 +18,14 @@ const router = createRouter({
       meta: {
         title: 'Kezdolap',
         description: 'Boulder Zóna - Debrecen legmodernebb boulder terme.',
+      },
+    },
+    {
+      path: '/admin',
+      component: () => import('../pages/AdminPage.vue'),
+      meta: {
+        title: 'Admin',
+        noLayout: true,
       },
     },
     {

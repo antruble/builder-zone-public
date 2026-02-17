@@ -3,7 +3,7 @@ import type { GalleryItem } from '@/content/gallery'
 import Container from '@/components/ui/Container.vue'
 
 defineProps<{
-  items: GalleryItem[]
+  items: readonly GalleryItem[]
 }>()
 
 const emit = defineEmits<{

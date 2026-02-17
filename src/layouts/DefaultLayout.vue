@@ -1,6 +1,9 @@
 ﻿<script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
-import { site } from '@/content/site'
+import { ref, inject, onMounted, onUnmounted } from 'vue'
+import { siteContentKey } from '@/composables/useSiteContent'
+import { site as defaults } from '@/content/site'
+
+const site = inject(siteContentKey, defaults)
 import logo from '@/assets/img/logo.jpeg'
 import adatvedelmPdf from '@/assets/pdfs/ADATVÉDELMI TÁJÉKOZTATÓ.pdf'
 import felelossegPdf from '@/assets/pdfs/FELELŐSSÉGKIZÁRÓ ÉS KOCKÁZATVÁLLALÓ NYILATKOZAT.pdf'

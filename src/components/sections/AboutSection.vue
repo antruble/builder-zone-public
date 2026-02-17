@@ -1,6 +1,10 @@
 <script setup lang="ts">
-import { site } from '@/content/site'
+import { inject } from 'vue'
+import { siteContentKey } from '@/composables/useSiteContent'
+import { site as defaults } from '@/content/site'
 import Container from '@/components/ui/Container.vue'
+
+const site = inject(siteContentKey, defaults)
 </script>
 
 <template>

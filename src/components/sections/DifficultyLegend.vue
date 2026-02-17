@@ -9,7 +9,7 @@ import tuzImg from '@/assets/img/tuz.jpg'
 import magnusImg from '@/assets/img/magnus.jpg'
 
 defineProps<{
-  levels: DifficultyLevel[]
+  levels: readonly DifficultyLevel[]
 }>()
 
 const levelStyles: { color: string; img: string }[] = [

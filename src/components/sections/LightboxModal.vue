@@ -4,7 +4,7 @@ import type { GalleryItem } from '@/content/gallery'
 
 const props = defineProps<{
   isOpen: boolean
-  items: GalleryItem[]
+  items: readonly GalleryItem[]
   index: number
 }>()
 

@@ -1,4 +1,6 @@
-import { site } from '@/content/site'
+import { useSiteContent } from '@/composables/useSiteContent'
+
+const site = useSiteContent()
 
 export interface SeoOptions {
   title?: string

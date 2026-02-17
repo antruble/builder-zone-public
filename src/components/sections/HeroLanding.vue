@@ -1,6 +1,9 @@
 ﻿<script setup lang="ts">
-import { ref } from 'vue'
-import { site } from '@/content/site'
+import { ref, inject } from 'vue'
+import { siteContentKey } from '@/composables/useSiteContent'
+import { site as defaults } from '@/content/site'
+
+const site = inject(siteContentKey, defaults)
 import Button from '@/components/ui/Button.vue'
 import AddressSheet from '@/components/ui/AddressSheet.vue'
 import heroBg from '@/assets/img/hero-bg.jpg'

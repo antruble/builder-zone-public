@@ -42,9 +42,6 @@ const levelStyles: { color: string; img: string }[] = [
               class="diff-icon-img"
             />
           </span>
-          <div class="diff-title-group">
-            <h3 class="diff-name">{{ level.name }}</h3>
-          </div>
         </div>
         <p class="diff-desc">{{ level.description }}</p>
       </div>

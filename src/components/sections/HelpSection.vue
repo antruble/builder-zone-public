@@ -214,7 +214,7 @@ import DifficultyLegend from '@/components/sections/DifficultyLegend.vue'
   font-weight: 700;
   color: #111827;
   margin: 0;
-  align-self: end;
+  align-self: center;
 }
 
 .help-rule-text {

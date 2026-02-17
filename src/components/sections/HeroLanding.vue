@@ -75,17 +75,17 @@ const mapSearchHref = site.contact.mapLink?.trim()
             <div class="diamond diamond-schedule">
               <div class="deco-ring deco-ring-schedule"></div>
               <div class="diamond-content">
-                <h3 class="font-bold text-gray-900 text-base mb-2">Nyitvatartás</h3>
+                <h3 class="font-bold text-gray-900 text-lg mb-2">Nyitvatartás</h3>
                 <div class="space-y-1.5">
                   <div>
-                    <p class="text-gray-600 text-xs">{{ site.hours.weekdays.days }}</p>
-                    <p class="text-gray-900 font-semibold text-sm">
+                    <p class="text-gray-600 text-sm">{{ site.hours.weekdays.days }}</p>
+                    <p class="text-gray-900 font-semibold text-base">
                       {{ site.hours.weekdays.open }} – {{ site.hours.weekdays.close }}
                     </p>
                   </div>
                   <div>
-                    <p class="text-gray-600 text-xs">{{ site.hours.weekend.days }}</p>
-                    <p class="text-gray-900 font-semibold text-sm">
+                    <p class="text-gray-600 text-sm">{{ site.hours.weekend.days }}</p>
+                    <p class="text-gray-900 font-semibold text-base">
                       {{ site.hours.weekend.open }} – {{ site.hours.weekend.close }}
                     </p>
                   </div>
@@ -130,7 +130,7 @@ const mapSearchHref = site.contact.mapLink?.trim()
                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
                   </svg>
                 </span>
-                <h3 class="font-bold text-gray-900 text-base mb-2">Címünk</h3>
+                <h3 class="font-bold text-gray-900 text-lg mb-2">Címünk</h3>
                 <span class="address-pill-address">
                   {{ site.contact.address }}
                 </span>
@@ -378,7 +378,7 @@ const mapSearchHref = site.contact.mapLink?.trim()
   align-items: center;
   justify-content: center;
   gap: 0.3rem;
-  font-size: 0.82rem;
+  font-size: 0.92rem;
   font-weight: 600;
   color: #1f2937;
   text-align: center;
@@ -387,7 +387,7 @@ const mapSearchHref = site.contact.mapLink?.trim()
 
 .address-pill-hint {
   display: block;
-  font-size: 0.62rem;
+  font-size: 0.72rem;
   font-weight: 500;
   letter-spacing: 0.02em;
   color: rgba(107, 114, 128, 0.7);

@@ -10,6 +10,7 @@ export interface ContactInfo {
   addressNote: string
   phones: string[]
   email: string
+  emailInfo: string
   socialLinks: string[] // TODO: add real social URLs
   mapLink: string // TODO: add Google Maps embed/link
 }
@@ -117,6 +118,7 @@ export const site: SiteContent = {
     addressNote: 'Az udvarba érkezve, leghátul balra találjátok a bejáratunkat.',
     phones: ['+36706360134', '+36308506098'],
     email: 'boulderzonabz@gmail.com',
+    emailInfo: 'info@boulderzona.hu',
     socialLinks: ['https://www.instagram.com/boulderzona','https://www.facebook.com/profile.php?id=61585562433494','https://www.tiktok.com/@boulder.zona'], // TODO: add real social URLs
     mapLink: '', // TODO: add Google Maps link
   },

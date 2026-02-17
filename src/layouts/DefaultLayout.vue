@@ -2,6 +2,15 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { site } from '@/content/site'
 import logo from '@/assets/img/logo.jpeg'
+import adatvedelmPdf from '@/assets/pdfs/ADATVÉDELMI TÁJÉKOZTATÓ.pdf'
+import felelossegPdf from '@/assets/pdfs/FELELŐSSÉGKIZÁRÓ ÉS KOCKÁZATVÁLLALÓ NYILATKOZAT.pdf'
+import hazirendPdf from '@/assets/pdfs/HÁZIREND.pdf'
+
+const documents = [
+  { name: 'Házirend', href: hazirendPdf },
+  { name: 'Adatvédelmi tájékoztató', href: adatvedelmPdf },
+  { name: 'Felelősségkizáró nyilatkozat', href: felelossegPdf },
+]
 
 const menuOpen = ref(false)
 const isScrolled = ref(false)
@@ -94,7 +103,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
               v-for="item in site.nav.items"
               :key="item.href"
               :href="item.href"
-              class="px-4 py-1.5 text-lg font-medium text-white/80 hover:text-white rounded-lg transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+              class="px-4 py-1.5 text-lg font-medium text-white hover:text-accent rounded-lg transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
               @click.prevent="handleNavClick(item.href)"
             >
               {{ item.label }}
@@ -166,6 +175,13 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
           <div class="footer-col">
             <p class="footer-label">Elérhetőség</p>
             <p>
+              <span class="footer-text footer-text--note">Információ / érdeklődés:</span>
+              <a :href="`mailto:${site.contact.emailInfo}`" class="footer-link">
+                {{ site.contact.emailInfo }}
+              </a>
+            </p>
+            <p>
+              <span class="footer-text footer-text--note">Üzleti megkeresés:</span>
               <a :href="`mailto:${site.contact.email}`" class="footer-link">
                 {{ site.contact.email }}
               </a>
@@ -180,6 +196,21 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
                 {{ phone }}
               </a>
             </div>
+          </div>
+
+          <!-- Documents column -->
+          <div class="footer-col">
+            <p class="footer-label">Dokumentumok</p>
+            <a
+              v-for="doc in documents"
+              :key="doc.name"
+              :href="doc.href"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="footer-link"
+            >
+              {{ doc.name }}
+            </a>
           </div>
         </div>
 
@@ -276,6 +307,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 .footer-text--note {
   font-size: 0.8rem;
   color: #9ca3af;
+  display: block;
 }
 
 /* Links */
@@ -337,7 +369,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
   }
 
   .footer-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 2.5rem;
   }
 }

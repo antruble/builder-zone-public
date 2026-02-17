@@ -26,6 +26,14 @@ import Container from '@/components/ui/Container.vue'
           <p class="about-body">
             {{ site.about.vision }}
           </p>
+          
+      <!-- Closing statement — pull quote -->
+      <div class="about-closing">
+        <div class="about-closing-line" aria-hidden="true"></div>
+        <blockquote class="about-quote">
+          {{ site.about.closing }}
+        </blockquote>
+      </div>
         </div>
 
         <!-- Right: founders glass card -->
@@ -57,14 +65,6 @@ import Container from '@/components/ui/Container.vue'
           <!-- Deco ring -->
           <div class="founders-deco" aria-hidden="true"></div>
         </div>
-      </div>
-
-      <!-- Closing statement — pull quote -->
-      <div class="about-closing">
-        <div class="about-closing-line" aria-hidden="true"></div>
-        <blockquote class="about-quote">
-          {{ site.about.closing }}
-        </blockquote>
       </div>
     </Container>
   </section>

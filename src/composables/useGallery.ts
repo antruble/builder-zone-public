@@ -8,8 +8,8 @@ export const galleryKey: InjectionKey<Ref<GalleryItem[]>> = Symbol('gallery')
 const galleryContent = ref<GalleryItem[]>([...defaults])
 let fetched = false
 
-export async function fetchGallery(): Promise<void> {
-  if (fetched) return
+export async function fetchGallery(): Promise<boolean> {
+  if (fetched) return true
   try {
     const snap = await getDoc(doc(db, 'gallery', 'items'))
     if (snap.exists()) {
@@ -18,15 +18,22 @@ export async function fetchGallery(): Promise<void> {
         galleryContent.value = data.items as GalleryItem[]
       }
     }
+    fetched = true
+    return true
   } catch {
-    // fallback to defaults silently
+    // keep fetched=false so caller can retry later
+    return false
   }
-  fetched = true
 }
 
 export async function saveGallery(items: GalleryItem[]): Promise<void> {
   await setDoc(doc(db, 'gallery', 'items'), { items: JSON.parse(JSON.stringify(items)) })
+  setGallery(items)
+}
+
+export function setGallery(items: GalleryItem[]): void {
   galleryContent.value = [...items]
+  fetched = true
 }
 
 export function useGallery(): Ref<GalleryItem[]> {

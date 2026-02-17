@@ -8,22 +8,29 @@ export const siteContentKey: InjectionKey<DeepReadonly<SiteContent>> = Symbol('s
 const siteContent = reactive<SiteContent>(structuredClone(defaults))
 let fetched = false
 
-export async function fetchSiteContent(): Promise<void> {
-  if (fetched) return
+export async function fetchSiteContent(): Promise<boolean> {
+  if (fetched) return true
   try {
     const snap = await getDoc(doc(db, 'content', 'site'))
     if (snap.exists()) {
       Object.assign(siteContent, defaults, snap.data())
     }
+    fetched = true
+    return true
   } catch {
-    // fallback to defaults silently
+    // keep fetched=false so caller can retry later
+    return false
   }
-  fetched = true
 }
 
 export async function saveSiteContent(data: SiteContent): Promise<void> {
   await setDoc(doc(db, 'content', 'site'), JSON.parse(JSON.stringify(data)))
+  setSiteContent(data)
+}
+
+export function setSiteContent(data: SiteContent): void {
   Object.assign(siteContent, data)
+  fetched = true
 }
 
 export function useSiteContent(): DeepReadonly<SiteContent> {

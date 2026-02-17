@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth'
-import { auth } from '@/lib/firebase'
-import { site as defaults, type SiteContent, type PricingRow, type Addon, type HelpRule, type DifficultyLevel } from '@/content/site'
+import { doc, writeBatch } from 'firebase/firestore'
+import { auth, db } from '@/lib/firebase'
+import { site as defaults, type SiteContent } from '@/content/site'
 import { galleryItems as galleryDefaults, type GalleryItem } from '@/content/gallery'
-import { fetchSiteContent, saveSiteContent, useSiteContent } from '@/composables/useSiteContent'
-import { fetchGallery, saveGallery, useGallery } from '@/composables/useGallery'
+import { fetchSiteContent, setSiteContent, useSiteContent } from '@/composables/useSiteContent'
+import { fetchGallery, setGallery, useGallery } from '@/composables/useGallery'
 
 const loggedIn = ref(false)
 const loginEmail = ref('')
@@ -13,17 +14,28 @@ const loginPassword = ref('')
 const loginError = ref('')
 const saving = ref(false)
 const saveMessage = ref('')
+const loading = ref(false)
+const loadError = ref('')
 
 const form = reactive<SiteContent>(JSON.parse(JSON.stringify(defaults)))
 const gallery = reactive<{ items: GalleryItem[] }>({ items: JSON.parse(JSON.stringify(galleryDefaults)) })
 
-onMounted(async () => {
-  onAuthStateChanged(auth, async (user) => {
+let unsubscribeAuth: (() => void) | undefined
+
+onMounted(() => {
+  unsubscribeAuth = onAuthStateChanged(auth, async (user) => {
     loggedIn.value = !!user
     if (user) {
       await loadData()
+    } else {
+      loadError.value = ''
+      saveMessage.value = ''
     }
   })
+})
+
+onUnmounted(() => {
+  unsubscribeAuth?.()
 })
 
 async function login() {
@@ -41,21 +53,42 @@ async function logout() {
 }
 
 async function loadData() {
-  await fetchSiteContent()
-  const currentSite = useSiteContent()
-  Object.assign(form, JSON.parse(JSON.stringify(currentSite)))
+  loading.value = true
+  loadError.value = ''
+  try {
+    const [siteLoaded, galleryLoaded] = await Promise.all([fetchSiteContent(), fetchGallery()])
+    if (!siteLoaded || !galleryLoaded) {
+      loadError.value = 'Nem sikerult betolteni az adatokat. Probald ujra.'
+      return
+    }
 
-  await fetchGallery()
-  const currentGallery = useGallery()
-  gallery.items = JSON.parse(JSON.stringify(currentGallery.value))
+    const currentSite = useSiteContent()
+    Object.assign(form, JSON.parse(JSON.stringify(currentSite)))
+
+    const currentGallery = useGallery()
+    gallery.items = JSON.parse(JSON.stringify(currentGallery.value))
+  } finally {
+    loading.value = false
+  }
 }
 
 async function handleSave() {
+  if (loading.value || !!loadError.value) return
+
   saving.value = true
   saveMessage.value = ''
   try {
-    await saveSiteContent(JSON.parse(JSON.stringify(form)))
-    await saveGallery(JSON.parse(JSON.stringify(gallery.items)))
+    const sitePayload = JSON.parse(JSON.stringify(form)) as SiteContent
+    const galleryPayload = JSON.parse(JSON.stringify(gallery.items)) as GalleryItem[]
+
+    const batch = writeBatch(db)
+    batch.set(doc(db, 'content', 'site'), sitePayload)
+    batch.set(doc(db, 'gallery', 'items'), { items: galleryPayload })
+    await batch.commit()
+
+    setSiteContent(sitePayload)
+    setGallery(galleryPayload)
+
     saveMessage.value = 'Mentve!'
     setTimeout(() => { saveMessage.value = '' }, 3000)
   } catch (e) {
@@ -107,7 +140,7 @@ function removeGalleryItem(index: number) {
     <div v-if="!loggedIn" class="admin-login">
       <div class="admin-login-card">
         <h1 class="admin-login-title">Boulder Zóna Admin</h1>
-        <form @submit.prevent="login" class="admin-login-form">
+        <form class="admin-login-form" @submit.prevent="login">
           <input
             v-model="loginEmail"
             type="email"
@@ -134,7 +167,10 @@ function removeGalleryItem(index: number) {
         <h1 class="admin-header-title">Boulder Zóna Admin</h1>
         <div class="admin-header-actions">
           <span v-if="saveMessage" class="admin-save-msg">{{ saveMessage }}</span>
-          <button class="admin-btn admin-btn--primary" :disabled="saving" @click="handleSave">
+          <button v-if="loadError" class="admin-btn admin-btn--ghost" :disabled="loading" @click="loadData">
+            Ujraprobalas
+          </button>
+          <button class="admin-btn admin-btn--primary" :disabled="saving || loading || !!loadError" @click="handleSave">
             {{ saving ? 'Mentés...' : 'Mentés' }}
           </button>
           <button class="admin-btn admin-btn--ghost" @click="logout">Kijelentkezés</button>
@@ -142,6 +178,8 @@ function removeGalleryItem(index: number) {
       </header>
 
       <div class="admin-content">
+        <p v-if="loading" class="admin-info">Adatok betoltese...</p>
+        <p v-else-if="loadError" class="admin-error admin-error--block">{{ loadError }}</p>
         <!-- ═══ Kapcsolat ═══ -->
         <section class="admin-section">
           <h2 class="admin-section-title">Kapcsolat</h2>
@@ -252,7 +290,7 @@ function removeGalleryItem(index: number) {
             <div class="admin-row">
               <input v-model="item.name" class="admin-input admin-input--flex" placeholder="Jegy neve" />
               <label class="admin-checkbox">
-                <input type="checkbox" v-model="item.highlight" />
+                <input v-model="item.highlight" type="checkbox" />
                 <span>Kiemelt</span>
               </label>
               <button class="admin-btn admin-btn--danger" @click="removePricingRow(i)">Törlés</button>
@@ -365,7 +403,7 @@ function removeGalleryItem(index: number) {
       <!-- Floating save bar -->
       <div class="admin-save-bar">
         <span v-if="saveMessage" class="admin-save-msg">{{ saveMessage }}</span>
-        <button class="admin-btn admin-btn--primary admin-btn--lg" :disabled="saving" @click="handleSave">
+        <button class="admin-btn admin-btn--primary admin-btn--lg" :disabled="saving || loading || !!loadError" @click="handleSave">
           {{ saving ? 'Mentés...' : 'Összes mentése' }}
         </button>
       </div>
@@ -415,6 +453,16 @@ function removeGalleryItem(index: number) {
   color: #dc2626;
   font-size: 0.85rem;
   margin: 0;
+}
+
+.admin-error--block {
+  margin-bottom: 1rem;
+}
+
+.admin-info {
+  color: #374151;
+  font-size: 0.9rem;
+  margin: 0 0 1rem;
 }
 
 /* Header */

@@ -63,9 +63,9 @@ onBeforeUnmount(() => {
             role="dialog"
             aria-modal="true"
             :aria-label="title ?? 'Címünk'"
-            class="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-4xl max-h-[90vh] overflow-y-auto overscroll-contain"
+            class="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-4xl h-[90vh] overflow-y-auto overscroll-contain"
           >
-            <div class="sheet-card pb-safe">
+            <div class="sheet-card pb-safe" style="height: 100%; display: flex; flex-direction: column;">
               <!-- Top accent gradient -->
               <div class="sheet-accent-line" aria-hidden="true"></div>
 
@@ -122,7 +122,7 @@ onBeforeUnmount(() => {
               </div>
 
               <!-- Map -->
-              <div class="px-5 pb-5">
+              <div class="px-5 pb-5 sheet-map-section">
                 <div class="sheet-map-wrap">
                   <div class="sheet-map-shine" aria-hidden="true"></div>
                   <iframe
@@ -264,6 +264,21 @@ onBeforeUnmount(() => {
   box-shadow: 0 0 0 3px rgba(158, 251, 123, 0.14);
 }
 
+/* Map section grows to fill remaining space */
+.sheet-map-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.sheet-map-section .sheet-map-wrap {
+  flex: 1;
+}
+
+.sheet-map-section .sheet-map-iframe {
+  height: 100%;
+}
+
 /* Map container — glass card treatment */
 .sheet-map-wrap {
   position: relative;
@@ -273,6 +288,8 @@ onBeforeUnmount(() => {
   box-shadow:
     0 8px 24px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  display: flex;
+  flex-direction: column;
 }
 
 .sheet-map-shine {

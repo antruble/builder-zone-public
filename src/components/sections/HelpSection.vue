@@ -79,6 +79,8 @@ import DifficultyLegend from '@/components/sections/DifficultyLegend.vue'
 /* ── Shared kicker / headline ── */
 .help-kicker {
   display: inline-block;
+  align-self: flex-start;
+  width: fit-content;
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.14em;

@@ -75,13 +75,13 @@ const rootClass = computed(() =>
 
 @media (min-width: 768px) {
   .section-title-kicker {
-    font-size: 3.5rem;
+    font-size: 2.5rem;
   }
 }
 
 @media (min-width: 1024px) {
   .section-title-kicker {
-    font-size: 4.25rem;
+    font-size: 3.5rem;
   }
 }
 </style>

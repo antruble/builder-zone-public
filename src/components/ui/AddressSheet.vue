@@ -63,7 +63,7 @@ onBeforeUnmount(() => {
             role="dialog"
             aria-modal="true"
             :aria-label="title ?? 'Címünk'"
-            class="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-4xl max-h-[72vh] overflow-y-auto overscroll-contain"
+            class="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-4xl max-h-[90vh] overflow-y-auto overscroll-contain"
           >
             <div class="sheet-card pb-safe">
               <!-- Top accent gradient -->

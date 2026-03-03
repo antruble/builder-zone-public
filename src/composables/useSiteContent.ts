@@ -13,7 +13,11 @@ export async function fetchSiteContent(): Promise<boolean> {
   try {
     const snap = await getDoc(doc(db, 'content', 'site'))
     if (snap.exists()) {
-      Object.assign(siteContent, defaults, snap.data())
+      const data = snap.data() as Partial<SiteContent>
+      Object.assign(siteContent, defaults, data, {
+        contact: { ...defaults.contact, ...(data.contact ?? {}) },
+        pricing: { ...defaults.pricing, ...(data.pricing ?? {}) },
+      })
     }
     fetched = true
     return true

@@ -174,7 +174,7 @@ const mapSearchHref = site.contact.mapLink?.trim()
   display: flex;
   flex-direction: column;
   width: 100%;
-  gap: 6rem;
+  gap: 5rem;
 }
 
 /* Sor 1: cím + alcím */
@@ -469,7 +469,7 @@ const mapSearchHref = site.contact.mapLink?.trim()
 
 @media (min-width: 1024px) {
   .hero-grid-outer {
-    padding-top: 10rem;
+    padding-top: 8rem;
   }
 
   .hero-grid {

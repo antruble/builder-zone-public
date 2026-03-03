@@ -78,17 +78,17 @@ const mapSearchHref = site.contact.mapLink?.trim()
             <div class="diamond diamond-schedule">
               <div class="deco-ring deco-ring-schedule"></div>
               <div class="diamond-content">
-                <h3 class="font-bold text-gray-900 text-lg mb-2">Nyitvatartás</h3>
-                <div class="space-y-1.5">
+                <h3 class="font-bold text-gray-900 text-base mb-1">Nyitvatartás</h3>
+                <div class="space-y-1">
                   <div>
-                    <p class="text-gray-600 text-sm">{{ site.hours.weekdays.days }}</p>
-                    <p class="text-gray-900 font-semibold text-base">
+                    <p class="text-gray-600 text-xs">{{ site.hours.weekdays.days }}</p>
+                    <p class="text-gray-900 font-semibold text-sm">
                       {{ site.hours.weekdays.open }} – {{ site.hours.weekdays.close }}
                     </p>
                   </div>
                   <div>
-                    <p class="text-gray-600 text-sm">{{ site.hours.weekend.days }}</p>
-                    <p class="text-gray-900 font-semibold text-base">
+                    <p class="text-gray-600 text-xs">{{ site.hours.weekend.days }}</p>
+                    <p class="text-gray-900 font-semibold text-sm">
                       {{ site.hours.weekend.open }} – {{ site.hours.weekend.close }}
                     </p>
                   </div>
@@ -151,6 +151,7 @@ const mapSearchHref = site.contact.mapLink?.trim()
       v-model="isAddressOpen"
       :address="site.contact.address"
       :address-note="site.contact.addressNote"
+      :transport-note="site.contact.transportNote"
       :map-embed-src="mapEmbedSrc"
       :map-search-href="mapSearchHref"
     />
@@ -275,7 +276,7 @@ const mapSearchHref = site.contact.mapLink?.trim()
 .diamond-content {
   position: relative;
   z-index: 2;
-  width: 65%;
+  width: 76%;
   text-align: center;
 }
 

@@ -56,6 +56,9 @@ const categoryColors: Record<string, { bg: string; pill: string; border: string 
                     borderColor: categoryColors[category]?.border,
                   }"
                 >{{ category }}</span>
+                <span v-if="site.pricing.categoryNotes[category]" class="pricing-category-note">
+                  {{ site.pricing.categoryNotes[category] }}
+                </span>
               </th>
             </tr>
           </thead>
@@ -67,7 +70,7 @@ const categoryColors: Record<string, { bg: string; pill: string; border: string 
             >
               <td class="pricing-td pricing-td-name">
                 <span class="pricing-item-name">{{ item.name }}</span>
-                <span v-if="item.highlight" class="pricing-badge">Ajánlott</span>
+                <span v-if="item.highlight" class="pricing-badge">Népszerű</span>
               </td>
               <td
                 v-for="category in site.pricing.categories"
@@ -94,7 +97,12 @@ const categoryColors: Record<string, { bg: string; pill: string; border: string 
             aria-hidden="true"
             :style="{ background: `linear-gradient(90deg, ${categoryColors[category]?.border ?? 'rgba(0,0,0,0.06)'}, transparent)` }"
           ></div>
-          <h3 class="pricing-mobile-category">{{ category }}</h3>
+          <h3 class="pricing-mobile-category">
+            {{ category }}
+            <span v-if="site.pricing.categoryNotes[category]" class="pricing-category-note">
+              {{ site.pricing.categoryNotes[category] }}
+            </span>
+          </h3>
           <ul class="pricing-mobile-list">
             <li
               v-for="item in site.pricing.items"
@@ -103,7 +111,7 @@ const categoryColors: Record<string, { bg: string; pill: string; border: string 
             >
               <span class="pricing-mobile-name">
                 {{ item.name }}
-                <span v-if="item.highlight" class="pricing-badge">Ajánlott</span>
+                <span v-if="item.highlight" class="pricing-badge">Népszerű</span>
               </span>
               <span class="pricing-mobile-price">
                 {{ formatHuf(item.prices[category] ?? 0) }}
@@ -235,6 +243,16 @@ const categoryColors: Record<string, { bg: string; pill: string; border: string 
   border-radius: 9999px;
   background: rgba(0, 0, 0, 0.04);
   border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Category note (e.g. "12 éves korig") */
+.pricing-category-note {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #9ca3af;
+  margin-top: 0.2rem;
 }
 
 /* Table rows */

@@ -6,6 +6,7 @@ const props = defineProps<{
   title?: string
   address: string
   addressNote?: string
+  transportNote?: string
   mapEmbedSrc: string
   mapSearchHref: string
 }>()
@@ -62,7 +63,7 @@ onBeforeUnmount(() => {
             role="dialog"
             aria-modal="true"
             :aria-label="title ?? 'Címünk'"
-            class="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-2xl max-h-[90vh] overflow-y-auto overscroll-contain"
+            class="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-4xl max-h-[72vh] overflow-y-auto overscroll-contain"
           >
             <div class="sheet-card pb-safe">
               <!-- Top accent gradient -->
@@ -112,6 +113,9 @@ onBeforeUnmount(() => {
                     <p class="text-sm font-semibold text-gray-900 leading-snug">{{ address }}</p>
                     <p v-if="addressNote" class="text-xs text-gray-500 mt-1 leading-relaxed">
                       {{ addressNote }}
+                    </p>
+                    <p v-if="transportNote" class="text-xs text-gray-500 mt-2 leading-relaxed">
+                      {{ transportNote }}
                     </p>
                   </div>
                 </div>
@@ -319,7 +323,7 @@ onBeforeUnmount(() => {
 
 @media (min-width: 768px) {
   .sheet-map-iframe {
-    height: 540px;
+    height: 340px;
   }
 }
 

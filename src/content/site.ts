@@ -8,6 +8,7 @@ export interface ContactInfo {
   name: string
   address: string
   addressNote: string
+  transportNote: string
   phones: string[]
   email: string
   emailInfo: string
@@ -86,6 +87,7 @@ export interface Addon {
 
 export interface Pricing {
   categories: string[]
+  categoryNotes: Record<string, string>
   items: PricingRow[]
   addons: Addon[]
 }
@@ -116,6 +118,7 @@ export const site: SiteContent = {
     name: 'Boulder Zóna',
     address: '4029, Debrecen, Déli sor 29.',
     addressNote: 'Az udvarba érkezve, leghátul balra találjátok a bejáratunkat.',
+    transportNote: 'A terem körülbelül 15 perc sétára helyezkedik el a Nagyállomástól. Tömegközlekedéssel is könnyen megközelíthető: a 30, 30A vagy 30H jelzésű buszokra felszállva a Trombitás utca megállónál kell leszállni.',
     phones: ['+36706360134', '+36308506098'],
     email: 'boulderzonabz@gmail.com',
     emailInfo: 'info@boulderzona.hu',
@@ -230,6 +233,7 @@ export const site: SiteContent = {
 
   pricing: {
     categories: ['Felnőtt', 'Diák', 'Gyerek'],
+    categoryNotes: { Gyerek: '12 éves korig' },
     items: [
       { name: 'Napi jegy', prices: { Felnőtt: 3300, Diák: 2800, Gyerek: 2400 } },
       { name: 'Havi bérlet', prices: { Felnőtt: 28000, Diák: 24000, Gyerek: 21000 }, highlight: true },

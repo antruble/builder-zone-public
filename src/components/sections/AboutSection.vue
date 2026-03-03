@@ -3,6 +3,7 @@ import { inject } from 'vue'
 import { siteContentKey } from '@/composables/useSiteContent'
 import { site as defaults } from '@/content/site'
 import Container from '@/components/ui/Container.vue'
+import SectionTitle from '@/components/ui/SectionTitle.vue'
 
 const site = inject(siteContentKey, defaults)
 </script>
@@ -16,12 +17,7 @@ const site = inject(siteContentKey, defaults)
 
     <Container class="relative z-10">
       <!-- Section header -->
-      <div class="about-header">
-        <span class="about-kicker">Rólunk</span>
-        <h2 class="about-title">
-          {{ site.about.mission }}
-        </h2>
-      </div>
+      <SectionTitle kicker="Rólunk" :title="site.about.mission" />
 
       <!-- Two-column: narrative + founders card -->
       <div class="about-grid">
@@ -46,11 +42,6 @@ const site = inject(siteContentKey, defaults)
 
           <!-- Founders badge -->
           <div class="founders-badge">
-            <span class="founders-badge-icon" aria-hidden="true">
-              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128H9m6 0a5.97 5.97 0 00-.786-3.07M9 19.128v-.003c0-1.113.285-2.16.786-3.07M9 19.128H3.375a4.125 4.125 0 01-1.121-8.09A9.375 9.375 0 0112 2.25a9.375 9.375 0 019.746 7.788 4.125 4.125 0 01-1.121 8.09M9 19.128a5.97 5.97 0 01.786-3.07" />
-              </svg>
-            </span>
             <span class="founders-badge-label">Alapítók</span>
           </div>
 
@@ -129,33 +120,6 @@ const site = inject(siteContentKey, defaults)
   );
 }
 
-/* Section header */
-.about-header {
-  max-width: 38rem;
-  margin-bottom: 3rem;
-}
-
-.about-kicker {
-  display: inline-block;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(91, 57, 148, 0.75);
-  margin-bottom: 0.75rem;
-  padding: 0.25rem 0.7rem;
-  border-radius: 9999px;
-  background: rgba(152, 111, 221, 0.08);
-  border: 1px solid rgba(152, 111, 221, 0.12);
-}
-
-.about-title {
-  font-size: 1.55rem;
-  font-weight: 700;
-  line-height: 1.35;
-  color: #111827;
-  letter-spacing: -0.01em;
-}
 
 /* Two-column grid */
 .about-grid {
@@ -312,10 +276,6 @@ const site = inject(siteContentKey, defaults)
     padding: 6rem 0 5.5rem;
   }
 
-  .about-title {
-    font-size: 1.75rem;
-  }
-
   .about-grid {
     grid-template-columns: 1fr 20rem;
     gap: 3.5rem;
@@ -334,10 +294,6 @@ const site = inject(siteContentKey, defaults)
   .about-grid {
     grid-template-columns: 1fr 22rem;
     gap: 4.5rem;
-  }
-
-  .about-title {
-    font-size: 1.85rem;
   }
 
   .about-quote {

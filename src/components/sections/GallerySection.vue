@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { GalleryItem } from '@/content/gallery'
 import Container from '@/components/ui/Container.vue'
+import SectionTitle from '@/components/ui/SectionTitle.vue'
 
 defineProps<{
   items: readonly GalleryItem[]
@@ -27,8 +28,7 @@ function gradientFor(idx: number) {
     <Container>
       <!-- Header -->
       <div class="gallery-header">
-        <span class="gallery-kicker">Galéria</span>
-        <h2 class="gallery-title">Nézz körül a termünkben</h2>
+        <SectionTitle kicker="Galéria" title="Nézz körül a termünkben" />
         <div class="gallery-chip">
           <span class="gallery-chip-dot" aria-hidden="true"></span>
           <span class="gallery-chip-text">Fotók hamarosan frissülnek</span>
@@ -88,27 +88,8 @@ function gradientFor(idx: number) {
   margin-bottom: 2rem;
 }
 
-.gallery-kicker {
-  display: inline-block;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(91, 57, 148, 0.75);
-  margin-bottom: 0.75rem;
-  padding: 0.25rem 0.7rem;
-  border-radius: 9999px;
-  background: rgba(152, 111, 221, 0.08);
-  border: 1px solid rgba(152, 111, 221, 0.12);
-}
-
-.gallery-title {
-  font-size: 1.55rem;
-  font-weight: 700;
-  line-height: 1.35;
-  color: #111827;
-  letter-spacing: -0.01em;
-  margin: 0 0 0.75rem;
+.gallery-header :deep(.section-title) {
+  margin-bottom: 1rem;
 }
 
 .gallery-chip {
@@ -272,10 +253,6 @@ function gradientFor(idx: number) {
     padding: 6rem 0 5.5rem;
   }
 
-  .gallery-title {
-    font-size: 1.75rem;
-  }
-
   .gallery-grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
@@ -300,10 +277,6 @@ function gradientFor(idx: number) {
 @media (min-width: 1024px) {
   .gallery-section {
     padding: 7rem 0 6rem;
-  }
-
-  .gallery-title {
-    font-size: 1.85rem;
   }
 
   .gallery-grid {

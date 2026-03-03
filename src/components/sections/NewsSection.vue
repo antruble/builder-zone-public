@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import Container from '@/components/ui/Container.vue'
 import Button from '@/components/ui/Button.vue'
+import SectionTitle from '@/components/ui/SectionTitle.vue'
 
 const emit = defineEmits<{
   contact: []
@@ -11,10 +12,7 @@ const emit = defineEmits<{
   <section id="hirek" class="scroll-mt-28 news-section section-neutral">
     <Container>
       <!-- Header -->
-      <div class="news-header">
-        <span class="news-kicker">Hírek</span>
-        <h2 class="news-title">A terem hírei és közösségi frissítések egy helyen.</h2>
-      </div>
+      <SectionTitle kicker="Hírek" title="A terem hírei és közösségi frissítések egy helyen." />
 
       <!-- Coming soon panel -->
       <div class="news-preview-panel">
@@ -54,33 +52,6 @@ const emit = defineEmits<{
   padding: 5rem 0 4.5rem;
 }
 
-/* ── Header ── */
-.news-header {
-  margin-bottom: 2rem;
-}
-
-.news-kicker {
-  display: inline-block;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(91, 57, 148, 0.75);
-  margin-bottom: 0.75rem;
-  padding: 0.25rem 0.7rem;
-  border-radius: 9999px;
-  background: rgba(152, 111, 221, 0.08);
-  border: 1px solid rgba(152, 111, 221, 0.12);
-}
-
-.news-title {
-  font-size: 1.55rem;
-  font-weight: 700;
-  line-height: 1.35;
-  color: #111827;
-  letter-spacing: -0.01em;
-  margin: 0;
-}
 
 /* ── Preview panel ── */
 .news-preview-panel {
@@ -218,10 +189,6 @@ const emit = defineEmits<{
     padding: 6rem 0 5.5rem;
   }
 
-  .news-title {
-    font-size: 1.75rem;
-  }
-
   .news-skeleton-grid {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -234,10 +201,6 @@ const emit = defineEmits<{
 @media (min-width: 1024px) {
   .news-section {
     padding: 7rem 0 6rem;
-  }
-
-  .news-title {
-    font-size: 1.85rem;
   }
 }
 </style>

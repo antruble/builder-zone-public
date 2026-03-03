@@ -3,6 +3,7 @@ import { inject } from 'vue'
 import { siteContentKey } from '@/composables/useSiteContent'
 import { site as defaults } from '@/content/site'
 import Container from '@/components/ui/Container.vue'
+import SectionTitle from '@/components/ui/SectionTitle.vue'
 
 const site = inject(siteContentKey, defaults)
 import DifficultyLegend from '@/components/sections/DifficultyLegend.vue'
@@ -11,6 +12,8 @@ import DifficultyLegend from '@/components/sections/DifficultyLegend.vue'
 <template>
   <section id="segedlet" class="scroll-mt-28 help-section section-accent">
     <Container>
+      <SectionTitle kicker="Segédlet" />
+
       <!-- ═══ Intro: Mi az a boulderezés? ═══ -->
       <div class="help-intro">
         <div class="help-intro-text">
@@ -46,9 +49,6 @@ import DifficultyLegend from '@/components/sections/DifficultyLegend.vue'
             class="help-rule-card"
           >
             <div class="help-rule-accent" aria-hidden="true"></div>
-            <div class="help-rule-number">
-              <span>{{ String(idx + 1).padStart(2, '0') }}</span>
-            </div>
             <h3 class="help-rule-title">{{ rule.title }}</h3>
             <p class="help-rule-text">{{ rule.text }}</p>
           </div>
@@ -162,12 +162,10 @@ import DifficultyLegend from '@/components/sections/DifficultyLegend.vue'
   box-shadow:
     0 4px 14px rgba(0, 0, 0, 0.04),
     inset 0 1px 0 rgba(255, 255, 255, 0.7);
-  padding: 1.25rem 1.35rem 1.25rem 1.35rem;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-rows: auto auto;
-  column-gap: 1rem;
-  row-gap: 0.35rem;
+  padding: 1.25rem 1.35rem 1.25rem 1.65rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -193,32 +191,11 @@ import DifficultyLegend from '@/components/sections/DifficultyLegend.vue'
   );
 }
 
-.help-rule-number {
-  grid-row: 1 / -1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 0.75rem;
-  background: rgba(152, 111, 221, 0.06);
-  border: 1px solid rgba(152, 111, 221, 0.08);
-}
-
-.help-rule-number span {
-  font-size: 0.8rem;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums;
-  color: rgba(91, 57, 148, 0.6);
-  letter-spacing: 0.02em;
-}
-
 .help-rule-title {
   font-size: 0.92rem;
   font-weight: 700;
   color: #111827;
   margin: 0;
-  align-self: center;
 }
 
 .help-rule-text {
@@ -226,7 +203,6 @@ import DifficultyLegend from '@/components/sections/DifficultyLegend.vue'
   line-height: 1.55;
   color: #6b7280;
   margin: 0;
-  align-self: start;
 }
 
 /* ═══════════════════════════════════════════════

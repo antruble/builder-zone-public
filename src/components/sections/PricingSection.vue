@@ -6,6 +6,7 @@ import { formatHuf } from '@/lib/format'
 
 const site = inject(siteContentKey, defaults)
 import Container from '@/components/ui/Container.vue'
+import SectionTitle from '@/components/ui/SectionTitle.vue'
 
 const categoryColors: Record<string, { bg: string; pill: string; border: string }> = {
   Felnőtt: {
@@ -31,8 +32,7 @@ const categoryColors: Record<string, { bg: string; pill: string; border: string 
     <Container>
       <!-- Section header -->
       <div class="pricing-header">
-        <span class="pricing-kicker">Árlista</span>
-        <h2 class="pricing-title">Válaszd ki a neked megfelelő jegyet vagy bérletet.</h2>
+        <SectionTitle kicker="Árlista" title="Válaszd ki a neked megfelelő jegyet vagy bérletet." />
         <p class="pricing-note">Áraink forintban értendők. Kisérőknek jegy váltása nem kötelező.</p>
       </div>
 
@@ -156,6 +156,10 @@ const categoryColors: Record<string, { bg: string; pill: string; border: string 
   margin-bottom: 2.5rem;
 }
 
+.pricing-header :deep(.section-title) {
+  margin-bottom: 0.5rem;
+}
+
 .pricing-kicker {
   display: inline-block;
   font-size: 0.7rem;
@@ -168,15 +172,6 @@ const categoryColors: Record<string, { bg: string; pill: string; border: string 
   border-radius: 9999px;
   background: rgba(152, 111, 221, 0.08);
   border: 1px solid rgba(152, 111, 221, 0.12);
-}
-
-.pricing-title {
-  font-size: 1.55rem;
-  font-weight: 700;
-  line-height: 1.35;
-  color: #111827;
-  letter-spacing: -0.01em;
-  margin: 0;
 }
 
 .pricing-note {
@@ -541,19 +536,11 @@ const categoryColors: Record<string, { bg: string; pill: string; border: string 
   .pricing-section {
     padding: 6rem 0 5.5rem;
   }
-
-  .pricing-title {
-    font-size: 1.75rem;
-  }
 }
 
 @media (min-width: 1024px) {
   .pricing-section {
     padding: 7rem 0 6rem;
-  }
-
-  .pricing-title {
-    font-size: 1.85rem;
   }
 }
 </style>

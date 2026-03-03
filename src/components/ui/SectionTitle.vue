@@ -36,6 +36,7 @@ const rootClass = computed(() =>
   font-weight: 900;
   letter-spacing: -0.045em;
   line-height: 1;
+  padding-bottom: 0.12em;
   margin: 0 0 0.6rem;
   background: linear-gradient(130deg, #0f172a 20%, rgba(91, 57, 148, 0.88) 100%);
   -webkit-background-clip: text;

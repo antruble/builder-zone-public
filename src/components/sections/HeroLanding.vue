@@ -61,19 +61,24 @@ const mapSearchHref = site.contact.mapLink?.trim()
     <div class="hero-ambient hero-ambient-accent" aria-hidden="true"></div>
 
     <div class="relative z-10 max-w-6xl mx-auto px-4 hero-grid-outer">
-      <div class="hero-grid">
-        <!-- Cell 1: Title + bullet — top-left -->
-        <div class="hero-cell hero-cell--copy">
-          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
-            {{ site.about.headline }}
-          </h1>
-          <p class="text-xl md:text-3xl text-white/80">
-            {{ site.about.bullets[0] }}
-          </p>
+      <div class="hero-layout">
+
+        <!-- Sor 1: Cím + alcím -->
+        <div class="hero-top">
+          <div class="hero-copy">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
+              {{ site.about.headline }}
+            </h1>
+            <p class="text-xl md:text-3xl text-white/80">
+              {{ site.about.bullets[0] }}
+            </p>
+          </div>
         </div>
 
-        <!-- Cell 2: Nyitvatartás — top-right -->
-        <div class="hero-cell hero-cell--hours">
+        <!-- Sor 2: Nyitvatartás | Socials | Cím -->
+        <div class="hero-bottom">
+
+          <!-- Nyitvatartás -->
           <div class="diamond-wrapper">
             <div class="diamond diamond-schedule">
               <div class="deco-ring deco-ring-schedule"></div>
@@ -96,10 +101,8 @@ const mapSearchHref = site.contact.mapLink?.trim()
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Cell 3: Socials — bottom-left -->
-        <div class="hero-cell hero-cell--socials">
+          <!-- Social ikonok -->
           <div class="hero-socials">
             <a
               v-for="(item, i) in socialItems"
@@ -120,10 +123,8 @@ const mapSearchHref = site.contact.mapLink?.trim()
               </svg>
             </a>
           </div>
-        </div>
 
-        <!-- Cell 4: Address — bottom-right -->
-        <div class="hero-cell hero-cell--address">
+          <!-- Cím -->
           <button class="diamond-wrapper diamond-wrapper--address" @click="isAddressOpen = true">
             <div class="diamond diamond-address">
               <div class="deco-ring deco-ring-address"></div>
@@ -143,6 +144,7 @@ const mapSearchHref = site.contact.mapLink?.trim()
               </div>
             </div>
           </button>
+
         </div>
       </div>
     </div>
@@ -167,31 +169,32 @@ const mapSearchHref = site.contact.mapLink?.trim()
   padding-bottom: 2rem;
 }
 
-/* ── 2×2 Grid ── */
-.hero-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 2.5rem;
-  width: 100%;
-}
-
-/* Mobile order: title(1), hours(2), address(3), socials(4) */
-.hero-cell--copy    { order: 1; }
-.hero-cell--hours   { order: 2; }
-.hero-cell--address { order: 3; }
-.hero-cell--socials { order: 4; }
-
-/* Cell alignment */
-.hero-cell {
+/* ── Flex column layout ── */
+.hero-layout {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+  gap: 6rem;
 }
 
-.hero-cell--copy {
+/* Sor 1: cím + alcím */
+.hero-top {
+  display: flex;
+}
+
+.hero-copy {
+  display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 1.5rem;
+}
+
+/* Sor 2: nyitvatartás | socials | cím — mobil: oszlop */
+.hero-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
 }
 
 /* ── Ambient blurs ── */
@@ -428,52 +431,29 @@ const mapSearchHref = site.contact.mapLink?.trim()
   transform: translateY(-2px);
 }
 
-/* ── Desktop: 2×2 grid ── */
+/* ── Desktop: sor 1 = cím, sor 2 = hours | socials | cím ── */
 @media (min-width: 768px) {
   .hero-grid-outer {
     padding-top: 7.5rem;
   }
 
-  .hero-grid {
-    grid-template-columns: 1fr auto;
-    grid-template-rows: 1fr 1fr;
-    gap: 3rem;
+  /* Sor 2 vízszintes sorba áll */
+  .hero-bottom {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
   }
 
-  /* Reset mobile order */
-  .hero-cell--copy    { order: unset; }
-  .hero-cell--hours   { order: unset; }
-  .hero-cell--socials { order: unset; }
-  .hero-cell--address { order: unset; }
-
-  /* Row 1: copy + hours */
-  .hero-cell--copy {
-    align-self: self-end;
-  }
-
-  .hero-cell--hours {
-    align-self: center;
-  }
-
-  /* Row 2: socials + address */
-  .hero-cell--socials {
-    align-self: self-end;
-    padding-bottom: 6rem;
-    justify-content: start;
-  }
-
-  .hero-cell--address {
-    align-self:baseline;
+  /* Socials középre nyúlik */
+  .hero-socials {
+    flex: 1;
+    gap: 2rem;
+    justify-content: center;
   }
 
   .diamond-wrapper {
     width: 230px;
     height: 230px;
-  }
-
-  .hero-socials {
-    gap: 2rem;
-    margin-left: 2rem;
   }
 
   .social-bubble {

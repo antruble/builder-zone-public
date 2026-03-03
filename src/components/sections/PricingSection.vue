@@ -56,8 +56,8 @@ const categoryColors: Record<string, { bg: string; pill: string; border: string 
                     borderColor: categoryColors[category]?.border,
                   }"
                 >{{ category }}</span>
-                <span v-if="site.pricing.categoryNotes[category]" class="pricing-category-note">
-                  {{ site.pricing.categoryNotes[category] }}
+                <span v-if="site.pricing.categoryNotes?.[category]" class="pricing-category-note">
+                  {{ site.pricing.categoryNotes?.[category] }}
                 </span>
               </th>
             </tr>
@@ -99,8 +99,8 @@ const categoryColors: Record<string, { bg: string; pill: string; border: string 
           ></div>
           <h3 class="pricing-mobile-category">
             {{ category }}
-            <span v-if="site.pricing.categoryNotes[category]" class="pricing-category-note">
-              {{ site.pricing.categoryNotes[category] }}
+            <span v-if="site.pricing.categoryNotes?.[category]" class="pricing-category-note">
+              {{ site.pricing.categoryNotes?.[category] }}
             </span>
           </h3>
           <ul class="pricing-mobile-list">

@@ -87,7 +87,7 @@ export interface Addon {
 
 export interface Pricing {
   categories: string[]
-  categoryNotes: Record<string, string>
+  categoryNotes?: Record<string, string>
   items: PricingRow[]
   addons: Addon[]
 }

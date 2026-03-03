@@ -165,7 +165,7 @@ const mapSearchHref = site.contact.mapLink?.trim()
 .hero-grid-outer {
   min-height: 100vh;
   display: flex;
-  padding-top: 6rem;
+  padding-top: 7rem;
   padding-bottom: 2rem;
 }
 

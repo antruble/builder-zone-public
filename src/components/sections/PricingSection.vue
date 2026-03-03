@@ -33,7 +33,7 @@ const categoryColors: Record<string, { bg: string; pill: string; border: string 
       <div class="pricing-header">
         <span class="pricing-kicker">Árlista</span>
         <h2 class="pricing-title">Válaszd ki a neked megfelelő jegyet vagy bérletet.</h2>
-        <p class="pricing-note">Áraink forintban értendők. Kisérőnek jegy váltása nem kötelező.</p>
+        <p class="pricing-note">Áraink forintban értendők. Kisérőknek jegy váltása nem kötelező.</p>
       </div>
 
       <!-- Desktop table — glass card -->

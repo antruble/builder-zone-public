@@ -16,7 +16,7 @@ const router = createRouter({
       path: '/',
       component: () => import('../pages/HomePage.vue'),
       meta: {
-        title: 'Kezdolap',
+        title: 'Kezdőlap',
         description: 'Boulder Zóna - Debrecen legmodernebb boulder terme.',
       },
     },

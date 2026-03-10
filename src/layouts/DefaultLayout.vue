@@ -87,14 +87,14 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
               : 'px-5 md:px-6 h-20',
           ]"
         >
-          <a
-            href="#hero"
+          <RouterLink
+            to="/"
             class="flex items-center gap-2 shrink-0 h-full"
-            @click.prevent="handleNavClick('#hero')"
+            @click="menuOpen = false"
           >
             <!-- <span class="text-lg font-bold text-gray-900 tracking-tight uppercase">Boulder Zóna</span> -->
             <img :src="logo" alt="" class="h-full max-h-full w-auto object-contain" />
-          </a>
+          </RouterLink>
 
           <div
             :class="[

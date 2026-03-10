@@ -22,6 +22,7 @@ const loadError = ref('')
 const form = reactive<SiteContent>(JSON.parse(JSON.stringify(defaults)))
 const gallery = reactive<{ items: GalleryItem[] }>({ items: JSON.parse(JSON.stringify(galleryDefaults)) })
 const news = reactive<{ items: NewsItem[] }>({ items: [] })
+const uploading = ref<Record<string, boolean>>({})
 
 let unsubscribeAuth: (() => void) | undefined
 
@@ -153,17 +154,54 @@ function addNewsItem() {
   })
 }
 
-function addNewsImage(item: NewsItem) {
-  if (!item.images) item.images = []
-  item.images.push('')
-}
-
 function removeNewsImage(item: NewsItem, i: number) {
   item.images?.splice(i, 1)
 }
 
 function removeNewsItem(index: number) {
   news.items.splice(index, 1)
+}
+
+async function uploadImage(file: File): Promise<string> {
+  const formData = new FormData()
+  formData.append('file', file)
+  const res = await fetch('/upload.php', {
+    method: 'POST',
+    headers: { 'X-Upload-Secret': import.meta.env.VITE_UPLOAD_SECRET },
+    body: formData,
+  })
+  if (!res.ok) throw new Error('Upload failed')
+  const data = await res.json()
+  return data.url as string
+}
+
+async function handleGalleryUpload(e: Event, item: GalleryItem) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  uploading.value[item.id] = true
+  try {
+    item.src = await uploadImage(file)
+  } catch {
+    alert('Feltöltés sikertelen. Ellenőrizd a szerver beállításait.')
+  } finally {
+    uploading.value[item.id] = false
+    ;(e.target as HTMLInputElement).value = ''
+  }
+}
+
+async function handleNewsImageUpload(e: Event, item: NewsItem) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  if (!item.images) item.images = []
+  uploading.value[item.id] = true
+  try {
+    item.images.push(await uploadImage(file))
+  } catch {
+    alert('Feltöltés sikertelen. Ellenőrizd a szerver beállításait.')
+  } finally {
+    uploading.value[item.id] = false
+    ;(e.target as HTMLInputElement).value = ''
+  }
 }
 
 </script>
@@ -432,12 +470,17 @@ function removeNewsItem(index: number) {
             <input v-model="item.subtitle" class="admin-input" placeholder="Alcím (opcionális)" />
             <textarea v-model="item.body" class="admin-textarea" rows="3" placeholder="Szöveg"></textarea>
             <div class="admin-news-images">
-              <span class="admin-label">Képek (URL-ek)</span>
-              <div v-for="(_, j) in item.images" :key="j" class="admin-row">
-                <input v-model="item.images![j]" class="admin-input admin-input--flex" placeholder="https://..." />
-                <button class="admin-btn admin-btn--danger admin-btn--sm" @click="removeNewsImage(item, j)">✕</button>
+              <span class="admin-label">Képek</span>
+              <div v-if="item.images && item.images.length > 0" class="admin-news-img-grid">
+                <div v-for="(src, j) in item.images" :key="j" class="admin-news-img-thumb">
+                  <img :src="src" alt="" />
+                  <button class="admin-news-img-remove" @click="removeNewsImage(item, j)">✕</button>
+                </div>
               </div>
-              <button class="admin-btn admin-btn--ghost admin-btn--sm" @click="addNewsImage(item)">+ Kép URL</button>
+              <label class="admin-btn admin-btn--ghost admin-btn--sm" :class="{ 'admin-btn--uploading': uploading[item.id] }">
+                {{ uploading[item.id] ? 'Feltöltés...' : '+ Kép hozzáadása' }}
+                <input type="file" accept="image/*" style="display:none" :disabled="uploading[item.id]" @change="(e) => handleNewsImageUpload(e, item)" />
+              </label>
             </div>
           </div>
           <button class="admin-btn admin-btn--ghost" @click="addNewsItem">+ Új hír</button>
@@ -453,7 +496,10 @@ function removeNewsItem(index: number) {
                 <div v-else class="admin-gallery-placeholder">Nincs kép</div>
               </div>
               <input v-model="item.alt" class="admin-input" placeholder="Alt szöveg" />
-              <input v-model="item.src" class="admin-input" placeholder="Kép URL" />
+              <label class="admin-btn admin-btn--ghost admin-btn--sm" :class="{ 'admin-btn--uploading': uploading[item.id] }">
+                {{ uploading[item.id] ? 'Feltöltés...' : 'Kép cseréje' }}
+                <input type="file" accept="image/*" style="display:none" :disabled="uploading[item.id]" @change="(e) => handleGalleryUpload(e, item)" />
+              </label>
               <button class="admin-btn admin-btn--danger admin-btn--sm" @click="removeGalleryItem(i)">Törlés</button>
             </div>
           </div>
@@ -754,7 +800,51 @@ function removeNewsItem(index: number) {
 .admin-news-images {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.5rem;
+}
+
+.admin-news-img-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.admin-news-img-thumb {
+  position: relative;
+  width: 5rem;
+  height: 5rem;
+  border-radius: 0.4rem;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+.admin-news-img-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.admin-news-img-remove {
+  position: absolute;
+  top: 0.2rem;
+  right: 0.2rem;
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 9999px;
+  border: none;
+  background: rgba(0, 0, 0, 0.55);
+  color: white;
+  font-size: 0.6rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-btn--uploading {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 /* Gallery */

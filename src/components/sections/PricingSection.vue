@@ -404,6 +404,8 @@ const categoryColors: Record<string, { bg: string; pill: string; border: string 
   font-size: 0.88rem;
   color: #374151;
   font-weight: 500;
+  flex: 1;
+  min-width: 0;
 }
 
 .pricing-mobile-price {
@@ -411,6 +413,10 @@ const categoryColors: Record<string, { bg: string; pill: string; border: string 
   font-size: 0.95rem;
   font-weight: 700;
   color: #111827;
+  flex-shrink: 0;
+  white-space: nowrap;
+  min-width: 6.5rem;
+  text-align: right;
 }
 
 /* ── Addons ── */

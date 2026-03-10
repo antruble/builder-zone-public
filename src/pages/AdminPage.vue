@@ -7,6 +7,8 @@ import { site as defaults, type SiteContent } from '@/content/site'
 import { galleryItems as galleryDefaults, type GalleryItem } from '@/content/gallery'
 import { fetchSiteContent, setSiteContent, useSiteContent } from '@/composables/useSiteContent'
 import { fetchGallery, setGallery, useGallery } from '@/composables/useGallery'
+import { fetchNews, setNews, useNews } from '@/composables/useNews'
+import { type NewsItem } from '@/content/news'
 
 const loggedIn = ref(false)
 const loginEmail = ref('')
@@ -19,6 +21,7 @@ const loadError = ref('')
 
 const form = reactive<SiteContent>(JSON.parse(JSON.stringify(defaults)))
 const gallery = reactive<{ items: GalleryItem[] }>({ items: JSON.parse(JSON.stringify(galleryDefaults)) })
+const news = reactive<{ items: NewsItem[] }>({ items: [] })
 
 let unsubscribeAuth: (() => void) | undefined
 
@@ -56,7 +59,7 @@ async function loadData() {
   loading.value = true
   loadError.value = ''
   try {
-    const [siteLoaded, galleryLoaded] = await Promise.all([fetchSiteContent(), fetchGallery()])
+    const [siteLoaded, galleryLoaded] = await Promise.all([fetchSiteContent(), fetchGallery(), fetchNews()])
     if (!siteLoaded || !galleryLoaded) {
       loadError.value = 'Nem sikerult betolteni az adatokat. Probald ujra.'
       return
@@ -67,6 +70,8 @@ async function loadData() {
 
     const currentGallery = useGallery()
     gallery.items = JSON.parse(JSON.stringify(currentGallery.value))
+
+    news.items = JSON.parse(JSON.stringify(useNews().value))
   } finally {
     loading.value = false
   }
@@ -81,13 +86,17 @@ async function handleSave() {
     const sitePayload = JSON.parse(JSON.stringify(form)) as SiteContent
     const galleryPayload = JSON.parse(JSON.stringify(gallery.items)) as GalleryItem[]
 
+    const newsPayload = JSON.parse(JSON.stringify(news.items)) as NewsItem[]
+
     const batch = writeBatch(db)
     batch.set(doc(db, 'content', 'site'), sitePayload)
     batch.set(doc(db, 'gallery', 'items'), { items: galleryPayload })
+    batch.set(doc(db, 'news', 'items'), { items: newsPayload })
     await batch.commit()
 
     setSiteContent(sitePayload)
     setGallery(galleryPayload)
+    setNews(newsPayload)
 
     saveMessage.value = 'Mentve!'
     setTimeout(() => { saveMessage.value = '' }, 3000)
@@ -130,6 +139,31 @@ function addGalleryItem() {
 
 function removeGalleryItem(index: number) {
   gallery.items.splice(index, 1)
+}
+
+function addNewsItem() {
+  news.items.unshift({
+    id: String(Date.now()),
+    title: '',
+    subtitle: '',
+    body: '',
+    date: new Date().toISOString().slice(0, 10),
+    images: [],
+    published: false,
+  })
+}
+
+function addNewsImage(item: NewsItem) {
+  if (!item.images) item.images = []
+  item.images.push('')
+}
+
+function removeNewsImage(item: NewsItem, i: number) {
+  item.images?.splice(i, 1)
+}
+
+function removeNewsItem(index: number) {
+  news.items.splice(index, 1)
 }
 
 </script>
@@ -380,6 +414,33 @@ function removeGalleryItem(index: number) {
               </label>
             </div>
           </div>
+        </section>
+
+        <!-- ═══ Hírek ═══ -->
+        <section class="admin-section">
+          <h2 class="admin-section-title">Hírek</h2>
+          <div v-for="(item, i) in news.items" :key="item.id" class="admin-news-card">
+            <div class="admin-row">
+              <input v-model="item.title" class="admin-input admin-input--flex" placeholder="Cím" />
+              <input v-model="item.date" type="date" class="admin-input" style="width: 10rem" />
+              <label class="admin-checkbox">
+                <input v-model="item.published" type="checkbox" />
+                <span>Közzétéve</span>
+              </label>
+              <button class="admin-btn admin-btn--danger admin-btn--sm" @click="removeNewsItem(i)">Törlés</button>
+            </div>
+            <input v-model="item.subtitle" class="admin-input" placeholder="Alcím (opcionális)" />
+            <textarea v-model="item.body" class="admin-textarea" rows="3" placeholder="Szöveg"></textarea>
+            <div class="admin-news-images">
+              <span class="admin-label">Képek (URL-ek)</span>
+              <div v-for="(_, j) in item.images" :key="j" class="admin-row">
+                <input v-model="item.images![j]" class="admin-input admin-input--flex" placeholder="https://..." />
+                <button class="admin-btn admin-btn--danger admin-btn--sm" @click="removeNewsImage(item, j)">✕</button>
+              </div>
+              <button class="admin-btn admin-btn--ghost admin-btn--sm" @click="addNewsImage(item)">+ Kép URL</button>
+            </div>
+          </div>
+          <button class="admin-btn admin-btn--ghost" @click="addNewsItem">+ Új hír</button>
         </section>
 
         <!-- ═══ Galéria ═══ -->
@@ -676,6 +737,24 @@ function removeGalleryItem(index: number) {
 .admin-btn--lg {
   padding: 0.65rem 2rem;
   font-size: 0.95rem;
+}
+
+/* News */
+.admin-news-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid #f0f0f0;
+  border-radius: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+/* News images subsection */
+.admin-news-images {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
 }
 
 /* Gallery */

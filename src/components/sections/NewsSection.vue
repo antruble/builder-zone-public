@@ -1,11 +1,29 @@
 <script setup lang="ts">
+import { inject, computed, ref } from 'vue'
 import Container from '@/components/ui/Container.vue'
-import Button from '@/components/ui/Button.vue'
 import SectionTitle from '@/components/ui/SectionTitle.vue'
+import NewsSheet from '@/components/ui/NewsSheet.vue'
+import { newsKey } from '@/composables/useNews'
+import type { NewsItem } from '@/content/news'
 
-const emit = defineEmits<{
-  contact: []
-}>()
+const news = inject(newsKey, ref([]))
+const publishedNews = computed(() =>
+  [...news.value].filter((n) => n.published).sort((a, b) => b.date.localeCompare(a.date)),
+)
+
+const selectedItem = ref<NewsItem | null>(null)
+const sheetOpen = ref(false)
+
+function openSheet(item: NewsItem) {
+  selectedItem.value = item
+  sheetOpen.value = true
+}
+
+function formatDate(iso: string): string {
+  if (!iso) return ''
+  const [y, m, d] = iso.split('-')
+  return `${y}.${m}.${d}.`
+}
 </script>
 
 <template>
@@ -14,36 +32,47 @@ const emit = defineEmits<{
       <!-- Header -->
       <SectionTitle kicker="Hírek" title="A terem hírei és közösségi frissítések egy helyen." />
 
-      <!-- Coming soon panel -->
-      <div class="news-preview-panel">
+      <!-- Real news grid -->
+      <div v-if="publishedNews.length > 0" class="news-grid">
+        <button
+          v-for="item in publishedNews"
+          :key="item.id"
+          class="news-card"
+          @click="openSheet(item)"
+        >
+          <div class="news-card-accent" aria-hidden="true"></div>
+
+          <span class="news-card-date">{{ formatDate(item.date) }}</span>
+          <h3 class="news-card-title">{{ item.title }}</h3>
+          <p v-if="item.subtitle" class="news-card-subtitle">{{ item.subtitle }}</p>
+
+          <span class="news-card-cta">Tovább →</span>
+        </button>
+      </div>
+
+      <!-- Coming soon panel (fallback) -->
+      <div v-else class="news-preview-panel">
         <div class="news-preview-accent" aria-hidden="true"></div>
 
-        <!-- Skeleton grid -->
         <div class="news-skeleton-grid">
-          <div
-            v-for="i in 3"
-            :key="i"
-            class="news-skeleton-card"
-          >
-            <!-- Badge skeleton -->
+          <div v-for="i in 3" :key="i" class="news-skeleton-card">
             <div class="news-skel-badge"></div>
-            <!-- Title skeleton -->
             <div class="news-skel-line news-skel-line--title"></div>
-            <!-- Body skeletons -->
             <div class="news-skel-line news-skel-line--body"></div>
             <div class="news-skel-line news-skel-line--body news-skel-line--short"></div>
           </div>
         </div>
 
-        <!-- Hamarosan label -->
         <div class="news-coming-soon">
           <div class="news-coming-dot" aria-hidden="true"></div>
           <span class="news-coming-text">Hamarosan érkezik</span>
         </div>
       </div>
-
     </Container>
   </section>
+
+  <!-- Sheet -->
+  <NewsSheet v-model="sheetOpen" :item="selectedItem" />
 </template>
 
 <style scoped>
@@ -52,15 +81,94 @@ const emit = defineEmits<{
   padding: 5rem 0 4.5rem;
 }
 
+/* ── Real news grid ── */
+.news-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
 
-/* ── Preview panel ── */
+.news-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.15rem;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.96), rgba(248, 245, 252, 0.9));
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  padding: 1.25rem 1.35rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.45rem;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.news-card:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 16px 36px rgba(0, 0, 0, 0.09),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.news-card:active {
+  transform: translateY(0);
+}
+
+.news-card-accent {
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, rgba(158, 251, 123, 0.5), rgba(152, 111, 221, 0.4));
+}
+
+.news-card-date {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: #9ca3af;
+}
+
+.news-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.news-card-subtitle {
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: #6b7280;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.news-card-cta {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: rgba(152, 111, 221, 0.85);
+  margin-top: 0.35rem;
+}
+
+/* ── Preview panel (fallback) ── */
 .news-preview-panel {
   position: relative;
   overflow: hidden;
   border-radius: 1.25rem;
   border: 1px solid rgba(255, 255, 255, 0.5);
-  background:
-    linear-gradient(155deg, rgba(255, 255, 255, 0.96), rgba(248, 245, 252, 0.9));
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.96), rgba(248, 245, 252, 0.9));
   box-shadow:
     0 12px 32px rgba(0, 0, 0, 0.06),
     0 2px 8px rgba(152, 111, 221, 0.03),
@@ -98,12 +206,10 @@ const emit = defineEmits<{
   gap: 0.65rem;
 }
 
-/* Hide 3rd card on mobile */
 .news-skeleton-card:nth-child(3) {
   display: none;
 }
 
-/* Skeleton elements */
 .news-skel-badge {
   width: 4rem;
   height: 1.15rem;
@@ -167,14 +273,12 @@ const emit = defineEmits<{
   color: #9ca3af;
 }
 
-/* ── CTA ── */
-.news-cta {
-  margin-top: 2.5rem;
-  text-align: center;
-}
-
 /* ── Responsive ── */
 @media (min-width: 640px) {
+  .news-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .news-skeleton-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -187,6 +291,10 @@ const emit = defineEmits<{
 @media (min-width: 768px) {
   .news-section {
     padding: 6rem 0 5.5rem;
+  }
+
+  .news-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 
   .news-skeleton-grid {

@@ -8,22 +8,16 @@ const site = inject(siteContentKey, defaults)
 import Container from '@/components/ui/Container.vue'
 import SectionTitle from '@/components/ui/SectionTitle.vue'
 
-const categoryColors: Record<string, { bg: string; pill: string; border: string }> = {
-  Felnőtt: {
-    bg: 'rgba(152, 111, 221, 0.06)',
-    pill: 'rgba(152, 111, 221, 0.12)',
-    border: 'rgba(152, 111, 221, 0.18)',
-  },
-  Diák: {
-    bg: 'rgba(158, 251, 123, 0.07)',
-    pill: 'rgba(158, 251, 123, 0.15)',
-    border: 'rgba(158, 251, 123, 0.22)',
-  },
-  Gyerek: {
-    bg: 'rgba(0, 0, 0, 0.02)',
-    pill: 'rgba(0, 0, 0, 0.04)',
-    border: 'rgba(0, 0, 0, 0.08)',
-  },
+const categoryColors = [
+  { bg: 'rgba(152, 111, 221, 0.06)', pill: 'rgba(152, 111, 221, 0.12)', border: 'rgba(152, 111, 221, 0.18)' },
+  { bg: 'rgba(158, 251, 123, 0.07)', pill: 'rgba(158, 251, 123, 0.15)', border: 'rgba(158, 251, 123, 0.22)' },
+  { bg: 'rgba(0, 0, 0, 0.02)', pill: 'rgba(0, 0, 0, 0.04)', border: 'rgba(0, 0, 0, 0.08)' },
+]
+
+const fallbackColor = categoryColors[2]!
+
+function colorFor(idx: number) {
+  return categoryColors[idx % categoryColors.length] ?? fallbackColor
 }
 </script>
 
@@ -32,8 +26,8 @@ const categoryColors: Record<string, { bg: string; pill: string; border: string 
     <Container>
       <!-- Section header -->
       <div class="pricing-header">
-        <SectionTitle kicker="Árlista" title="Válaszd ki a neked megfelelő jegyet vagy bérletet." />
-        <p class="pricing-note">Áraink forintban értendők. Kísérőknek jegy váltása nem kötelező.</p>
+        <SectionTitle :kicker="site.ui.pricingKicker" :title="site.ui.pricingTitle" />
+        <p class="pricing-note">{{ site.ui.pricingNote }}</p>
       </div>
 
       <!-- Desktop table — glass card -->
@@ -44,16 +38,16 @@ const categoryColors: Record<string, { bg: string; pill: string; border: string 
             <tr>
               <th class="pricing-th pricing-th-name"></th>
               <th
-                v-for="category in site.pricing.categories"
+                v-for="(category, ci) in site.pricing.categories"
                 :key="category"
                 class="pricing-th"
-                :style="{ backgroundColor: categoryColors[category]?.bg }"
+                :style="{ backgroundColor: colorFor(ci).bg }"
               >
                 <span
                   class="pricing-category-pill"
                   :style="{
-                    backgroundColor: categoryColors[category]?.pill,
-                    borderColor: categoryColors[category]?.border,
+                    backgroundColor: colorFor(ci).pill,
+                    borderColor: colorFor(ci).border,
                   }"
                 >{{ category }}</span>
                 <span v-if="site.pricing.categoryNotes?.[category]" class="pricing-category-note">
@@ -70,13 +64,13 @@ const categoryColors: Record<string, { bg: string; pill: string; border: string 
             >
               <td class="pricing-td pricing-td-name">
                 <span class="pricing-item-name">{{ item.name }}</span>
-                <span v-if="item.highlight" class="pricing-badge">Népszerű</span>
+                <span v-if="item.highlight" class="pricing-badge">{{ site.ui.pricingBadge }}</span>
               </td>
               <td
-                v-for="category in site.pricing.categories"
+                v-for="(category, ci) in site.pricing.categories"
                 :key="category"
                 class="pricing-td pricing-td-price"
-                :style="{ backgroundColor: categoryColors[category]?.bg }"
+                :style="{ backgroundColor: colorFor(ci).bg }"
               >
                 {{ formatHuf(item.prices[category] ?? 0) }}
               </td>
@@ -88,14 +82,14 @@ const categoryColors: Record<string, { bg: string; pill: string; border: string 
       <!-- Mobile cards -->
       <div class="flex md:hidden pricing-mobile">
         <div
-          v-for="category in site.pricing.categories"
+          v-for="(category, ci) in site.pricing.categories"
           :key="category"
           class="pricing-mobile-card"
         >
           <div
             class="pricing-mobile-accent"
             aria-hidden="true"
-            :style="{ background: `linear-gradient(90deg, ${categoryColors[category]?.border ?? 'rgba(0,0,0,0.06)'}, transparent)` }"
+            :style="{ background: `linear-gradient(90deg, ${colorFor(ci).border}, transparent)` }"
           ></div>
           <h3 class="pricing-mobile-category">
             {{ category }}
@@ -111,7 +105,7 @@ const categoryColors: Record<string, { bg: string; pill: string; border: string 
             >
               <span class="pricing-mobile-name">
                 {{ item.name }}
-                <span v-if="item.highlight" class="pricing-badge">Népszerű</span>
+                <span v-if="item.highlight" class="pricing-badge">{{ site.ui.pricingBadge }}</span>
               </span>
               <span class="pricing-mobile-price">
                 {{ formatHuf(item.prices[category] ?? 0) }}
@@ -123,8 +117,8 @@ const categoryColors: Record<string, { bg: string; pill: string; border: string 
 
       <!-- Addons -->
       <div class="pricing-addons-header">
-        <span class="pricing-kicker">Extrák</span>
-        <p class="pricing-addons-sub">Kiegészítő szolgáltatások</p>
+        <span class="pricing-kicker">{{ site.ui.pricingAddonsKicker }}</span>
+        <p class="pricing-addons-sub">{{ site.ui.pricingAddonsSub }}</p>
       </div>
 
       <div class="pricing-addons-grid">

@@ -1,11 +1,29 @@
-import { reactive, type InjectionKey, type DeepReadonly } from 'vue'
-import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { reactive, ref, watchEffect, type InjectionKey, type DeepReadonly } from 'vue'
+import { doc, getDoc } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
-import { site as defaults, type SiteContent } from '@/content/site'
+import { site as defaults, siteEn as defaultsEn, type SiteContent } from '@/content/site'
 
 export const siteContentKey: InjectionKey<DeepReadonly<SiteContent>> = Symbol('siteContent')
 
+// Per-locale content stores
+const siteHu = reactive<SiteContent>(structuredClone(defaults))
+const siteEn = reactive<SiteContent>(structuredClone(defaultsEn))
+
+// The "live" reactive object provided to all components
 const siteContent = reactive<SiteContent>(structuredClone(defaults))
+
+// Module-level locale singleton (persisted to localStorage)
+export const locale = ref<'hu' | 'en'>(
+  (localStorage.getItem('bz-locale') as 'hu' | 'en') ?? 'hu',
+)
+
+// Keep siteContent in sync with the active locale
+watchEffect(() => {
+  const src = locale.value === 'hu' ? siteHu : siteEn
+  Object.assign(siteContent, src)
+  localStorage.setItem('bz-locale', locale.value)
+})
+
 let fetched = false
 
 export async function fetchSiteContent(): Promise<boolean> {
@@ -13,30 +31,51 @@ export async function fetchSiteContent(): Promise<boolean> {
   try {
     const snap = await getDoc(doc(db, 'content', 'site'))
     if (snap.exists()) {
-      const data = snap.data() as Partial<SiteContent>
-      Object.assign(siteContent, defaults, data, {
-        contact: { ...defaults.contact, ...(data.contact ?? {}) },
-        pricing: { ...defaults.pricing, ...(data.pricing ?? {}) },
-      })
+      const data = snap.data()
+
+      if (data.hu) {
+        // New format: { hu: SiteContent, en: SiteContent }
+        const hu = data.hu as Partial<SiteContent>
+        const en = data.en as Partial<SiteContent> | undefined
+        Object.assign(siteHu, defaults, hu, {
+          contact: { ...defaults.contact, ...(hu.contact ?? {}) },
+          pricing: { ...defaults.pricing, ...(hu.pricing ?? {}) },
+          ui: { ...defaults.ui, ...(hu.ui ?? {}) },
+        })
+        if (en) {
+          Object.assign(siteEn, defaultsEn, en, {
+            contact: { ...defaultsEn.contact, ...(en.contact ?? {}) },
+            pricing: { ...defaultsEn.pricing, ...(en.pricing ?? {}) },
+            ui: { ...defaultsEn.ui, ...(en.ui ?? {}) },
+          })
+        }
+      } else {
+        // Old format: flat SiteContent (HU only) — migrate gracefully
+        const hu = data as Partial<SiteContent>
+        Object.assign(siteHu, defaults, hu, {
+          contact: { ...defaults.contact, ...(hu.contact ?? {}) },
+          pricing: { ...defaults.pricing, ...(hu.pricing ?? {}) },
+        })
+        // siteEn stays as defaultsEn (already set)
+      }
     }
     fetched = true
     return true
   } catch {
-    // keep fetched=false so caller can retry later
     return false
   }
 }
 
-export async function saveSiteContent(data: SiteContent): Promise<void> {
-  await setDoc(doc(db, 'content', 'site'), JSON.parse(JSON.stringify(data)))
-  setSiteContent(data)
-}
-
-export function setSiteContent(data: SiteContent): void {
-  Object.assign(siteContent, data)
+export function setSiteContent(hu: SiteContent, en: SiteContent): void {
+  Object.assign(siteHu, hu)
+  Object.assign(siteEn, en)
   fetched = true
 }
 
 export function useSiteContent(): DeepReadonly<SiteContent> {
   return siteContent
+}
+
+export function useSiteRaw(): { hu: SiteContent; en: SiteContent } {
+  return { hu: siteHu, en: siteEn }
 }

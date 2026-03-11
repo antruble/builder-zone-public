@@ -17,7 +17,7 @@ const site = inject(siteContentKey, defaults)
 
     <Container class="relative z-10">
       <!-- Section header -->
-      <SectionTitle kicker="Rólunk" :title="site.about.mission" />
+      <SectionTitle :kicker="site.ui.aboutKicker" :title="site.about.mission" />
 
       <!-- Two-column: narrative + founders card -->
       <div class="about-grid">
@@ -42,7 +42,7 @@ const site = inject(siteContentKey, defaults)
 
           <!-- Founders badge -->
           <div class="founders-badge">
-            <span class="founders-badge-label">Alapítók</span>
+            <span class="founders-badge-label">{{ site.ui.aboutFoundersBadge }}</span>
           </div>
 
           <!-- Names -->

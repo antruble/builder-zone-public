@@ -83,7 +83,7 @@ const mapSearchHref = site.contact.mapLink?.trim()
             <div class="diamond diamond-schedule">
               <div class="deco-ring deco-ring-schedule"></div>
               <div class="diamond-content">
-                <h3 class="font-bold text-gray-900 text-base mb-1">Nyitvatartás</h3>
+                <h3 class="font-bold text-gray-900 text-base mb-1">{{ site.ui.hoursLabel }}</h3>
                 <div class="space-y-1">
                   <div>
                     <p class="text-gray-600 text-xs">{{ site.hours.weekdays.days }}</p>
@@ -134,12 +134,12 @@ const mapSearchHref = site.contact.mapLink?.trim()
                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
                   </svg>
                 </span>
-                <h3 class="font-bold text-gray-900 text-lg mb-2">Címünk</h3>
+                <h3 class="font-bold text-gray-900 text-lg mb-2">{{ site.ui.addressLabel }}</h3>
                 <span class="address-pill-address">
                   {{ site.contact.address }}
                 </span>
                 <span class="address-pill-hint">
-                  Kattints a térkép megnyitásához
+                  {{ site.ui.mapHintLabel }}
                 </span>
               </div>
             </div>
@@ -151,6 +151,7 @@ const mapSearchHref = site.contact.mapLink?.trim()
 
     <AddressSheet
       v-model="isAddressOpen"
+      :title="site.ui.addressLabel"
       :address="site.contact.address"
       :address-note="site.contact.addressNote"
       :transport-note="site.contact.transportNote"

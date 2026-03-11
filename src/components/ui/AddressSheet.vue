@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import { watch, onBeforeUnmount } from 'vue'
+import { inject, watch, onBeforeUnmount } from 'vue'
+import { siteContentKey } from '@/composables/useSiteContent'
+import { site as defaults } from '@/content/site'
+
+const site = inject(siteContentKey, defaults)
 
 const props = defineProps<{
   modelValue: boolean
@@ -62,7 +66,7 @@ onBeforeUnmount(() => {
             v-if="modelValue"
             role="dialog"
             aria-modal="true"
-            :aria-label="title ?? 'Címünk'"
+            :aria-label="title ?? site.ui.addressLabel"
             class="fixed inset-x-0 bottom-0 z-50 mx-auto max-w-4xl h-[90vh] overflow-y-auto overscroll-contain"
           >
             <div class="sheet-card pb-safe" style="height: 100%; display: flex; flex-direction: column;">
@@ -77,7 +81,7 @@ onBeforeUnmount(() => {
               <!-- Header -->
               <div class="flex items-center justify-between gap-3 px-5 pt-2 pb-3">
                 <h3 class="text-base font-bold text-gray-900">
-                  {{ title ?? 'Címünk' }}
+                  {{ title ?? site.ui.addressLabel }}
                 </h3>
 
                 <div class="flex items-center gap-2">
@@ -94,7 +98,7 @@ onBeforeUnmount(() => {
                   </a>
 
                   <button
-                    aria-label="Bezárás"
+                    :aria-label="site.ui.closeLabel"
                     class="sheet-close-btn"
                     @click="close"
                   >

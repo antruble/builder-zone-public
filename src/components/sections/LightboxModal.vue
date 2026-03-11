@@ -1,6 +1,10 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, watch } from 'vue'
+import { computed, inject, onMounted, onUnmounted, watch } from 'vue'
 import type { GalleryItem } from '@/content/gallery'
+import { siteContentKey } from '@/composables/useSiteContent'
+import { site as defaults } from '@/content/site'
+
+const site = inject(siteContentKey, defaults)
 
 const props = defineProps<{
   isOpen: boolean
@@ -54,7 +58,7 @@ const current = computed<GalleryItem | undefined>(() => props.items[props.index]
         class="fixed inset-0 z-[100] flex items-center justify-center"
         role="dialog"
         aria-modal="true"
-        :aria-label="`Galéria: ${current?.alt ?? ''}`"
+        :aria-label="`${site.ui.galleryModalLabel}: ${current?.alt ?? ''}`"
       >
         <!-- Overlay -->
         <div class="absolute inset-0 bg-black/80" @click="emit('close')"></div>
@@ -64,7 +68,7 @@ const current = computed<GalleryItem | undefined>(() => props.items[props.index]
           <!-- Prev -->
           <button
             class="shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
-            aria-label="Előző kép"
+            :aria-label="site.ui.prevImageLabel"
             @click="emit('prev')"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -91,7 +95,7 @@ const current = computed<GalleryItem | undefined>(() => props.items[props.index]
                 <svg class="w-12 h-12 text-white/60 mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21z" />
                 </svg>
-                <p class="text-white/80 font-medium">Fotó hamarosan</p>
+                <p class="text-white/80 font-medium">{{ site.ui.comingSoonLabel }}</p>
               </div>
             </div>
 
@@ -104,7 +108,7 @@ const current = computed<GalleryItem | undefined>(() => props.items[props.index]
           <!-- Next -->
           <button
             class="shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
-            aria-label="Következő kép"
+            :aria-label="site.ui.nextImageLabel"
             @click="emit('next')"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -116,7 +120,7 @@ const current = computed<GalleryItem | undefined>(() => props.items[props.index]
         <!-- Close button -->
         <button
           class="absolute top-4 right-4 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
-          aria-label="Bezárás"
+          :aria-label="site.ui.closeLabel"
           @click="emit('close')"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">

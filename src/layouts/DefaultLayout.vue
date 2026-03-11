@@ -1,7 +1,8 @@
 ﻿<script setup lang="ts">
-import { ref, inject, onMounted, onUnmounted } from 'vue'
-import { siteContentKey } from '@/composables/useSiteContent'
+import { ref, computed, inject, onMounted, onUnmounted } from 'vue'
+import { siteContentKey, locale } from '@/composables/useSiteContent'
 import { site as defaults } from '@/content/site'
+
 
 const site = inject(siteContentKey, defaults)
 import logo from '@/assets/img/logo.jpeg'
@@ -9,11 +10,19 @@ import adatvedelmPdf from '@/assets/pdfs/ADATVÉDELMI TÁJÉKOZTATÓ.pdf'
 import felelossegPdf from '@/assets/pdfs/FELELŐSSÉGKIZÁRÓ ÉS KOCKÁZATVÁLLALÓ NYILATKOZAT.pdf'
 import hazirendPdf from '@/assets/pdfs/HÁZIREND.pdf'
 
-const documents = [
-  { name: 'Házirend', href: hazirendPdf },
-  { name: 'Adatvédelmi tájékoztató', href: adatvedelmPdf },
-  { name: 'Felelősségkizáró nyilatkozat', href: felelossegPdf },
-]
+const documents = computed(() =>
+  locale.value === 'en'
+    ? [
+        { name: 'House Rules', href: hazirendPdf },
+        { name: 'Privacy Policy', href: adatvedelmPdf },
+        { name: 'Disclaimer', href: felelossegPdf },
+      ]
+    : [
+        { name: 'Házirend', href: hazirendPdf },
+        { name: 'Adatvédelmi tájékoztató', href: adatvedelmPdf },
+        { name: 'Felelősségkizáró nyilatkozat', href: felelossegPdf },
+      ],
+)
 
 const menuOpen = ref(false)
 const isScrolled = ref(false)
@@ -102,26 +111,43 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
             <img :src="logo" alt="" class="h-full max-h-full w-auto object-contain" />
           </RouterLink>
 
-          <div
-            :class="[
-              'hidden md:flex items-center gap-1 bg-primary/90 rounded-2xl transition-all duration-300',
-              isScrolled ? 'px-5 py-2.5' : 'px-6 py-3',
-            ]"
-          >
-            <a
-              v-for="item in site.nav.items"
-              :key="item.href"
-              :href="item.href"
-              class="px-4 py-1.5 text-lg font-medium text-white hover:text-accent rounded-lg transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
-              @click.prevent="handleNavClick(item.href)"
+          <div class="flex items-center gap-3">
+            <div
+              :class="[
+                'hidden md:flex items-center gap-1 bg-primary/90 rounded-2xl transition-all duration-300',
+                isScrolled ? 'px-5 py-2.5' : 'px-6 py-3',
+              ]"
             >
-              {{ item.label }}
-            </a>
-          </div>
+              <a
+                v-for="item in site.nav.items"
+                :key="item.href"
+                :href="item.href"
+                class="px-4 py-1.5 text-lg font-medium text-white hover:text-accent rounded-lg transition focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+                @click.prevent="handleNavClick(item.href)"
+              >
+                {{ item.label }}
+              </a>
+            </div>
 
+            <!-- Language toggle -->
+            <div class="lang-toggle">
+              <button
+                :class="['lang-btn', locale === 'hu' && 'lang-btn--active']"
+                @click="locale = 'hu'"
+              >
+                HU
+              </button>
+              <button
+                :class="['lang-btn', locale === 'en' && 'lang-btn--active']"
+                @click="locale = 'en'"
+              >
+                EN
+              </button>
+            </div>
+          </div>
           <button
             class="md:hidden p-2 text-gray-700 rounded-lg hover:bg-black/5 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
-            aria-label="Menü megnyitása"
+            :aria-label="site.ui.menuOpenLabel"
             @click="menuOpen = !menuOpen"
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -175,22 +201,22 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 
           <!-- Hours column -->
           <div class="footer-col">
-            <p class="footer-label">Nyitvatartás</p>
+            <p class="footer-label">{{ site.ui.footerHours }}</p>
             <p class="footer-text">{{ site.hours.weekdays.days }}: {{ site.hours.weekdays.open }} – {{ site.hours.weekdays.close }}</p>
             <p class="footer-text">{{ site.hours.weekend.days }}: {{ site.hours.weekend.open }} – {{ site.hours.weekend.close }}</p>
           </div>
 
           <!-- Contact column -->
           <div class="footer-col">
-            <p class="footer-label">Elérhetőség</p>
+            <p class="footer-label">{{ site.ui.footerContact }}</p>
             <p>
-              <span class="footer-text footer-text--note">Információ / érdeklődés:</span>
+              <span class="footer-text footer-text--note">{{ site.ui.footerInfoLabel }}</span>
               <a :href="`mailto:${site.contact.emailInfo}`" class="footer-link">
                 {{ site.contact.emailInfo }}
               </a>
             </p>
             <p>
-              <span class="footer-text footer-text--note">Üzleti megkeresés:</span>
+              <span class="footer-text footer-text--note">{{ site.ui.footerBizLabel }}</span>
               <a :href="`mailto:${site.contact.email}`" class="footer-link">
                 {{ site.contact.email }}
               </a>
@@ -209,7 +235,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 
           <!-- Documents column -->
           <div class="footer-col">
-            <p class="footer-label">Dokumentumok</p>
+            <p class="footer-label">{{ site.ui.footerDocs }}</p>
             <a
               v-for="doc in documents"
               :key="doc.name"
@@ -227,7 +253,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
         <div class="footer-bottom">
           <span class="footer-copyright">&copy; {{ new Date().getFullYear() }} {{ site.contact.name }}</span>
           <span class="footer-dot" aria-hidden="true"></span>
-          <span class="footer-tagline">Boulder terem Debrecenben</span>
+          <span class="footer-tagline">{{ site.ui.footerTagline }}</span>
         </div>
       </div>
     </footer>
@@ -369,6 +395,35 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
   font-size: 0.75rem;
   color: #b0b5bd;
   font-weight: 500;
+}
+
+/* ── Language toggle ── */
+.lang-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 9999px;
+  padding: 0.2rem;
+}
+
+.lang-btn {
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.lang-btn--active {
+  background: white;
+  color: #111;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* ── Responsive ── */

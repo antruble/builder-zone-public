@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted, onUnmounted } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth'
 import { doc, writeBatch } from 'firebase/firestore'
 import { auth, db } from '@/lib/firebase'
-import { site as defaults, type SiteContent } from '@/content/site'
+import { site as defaults, siteEn as defaultsEn, type SiteContent } from '@/content/site'
 import { galleryItems as galleryDefaults, type GalleryItem } from '@/content/gallery'
-import { fetchSiteContent, setSiteContent, useSiteContent } from '@/composables/useSiteContent'
+import { fetchSiteContent, setSiteContent, useSiteRaw } from '@/composables/useSiteContent'
 import { fetchGallery, setGallery, useGallery } from '@/composables/useGallery'
 import { fetchNews, setNews, useNews } from '@/composables/useNews'
 import { type NewsItem } from '@/content/news'
@@ -20,9 +20,13 @@ const loading = ref(false)
 const loadError = ref('')
 
 const form = reactive<SiteContent>(JSON.parse(JSON.stringify(defaults)))
+const formEn = reactive<SiteContent>(JSON.parse(JSON.stringify(defaultsEn)))
 const gallery = reactive<{ items: GalleryItem[] }>({ items: JSON.parse(JSON.stringify(galleryDefaults)) })
 const news = reactive<{ items: NewsItem[] }>({ items: [] })
 const uploading = ref<Record<string, boolean>>({})
+
+const adminLocale = ref<'hu' | 'en'>('hu')
+const activeForm = computed(() => adminLocale.value === 'hu' ? form : formEn)
 
 let unsubscribeAuth: (() => void) | undefined
 
@@ -66,8 +70,9 @@ async function loadData() {
       return
     }
 
-    const currentSite = useSiteContent()
-    Object.assign(form, JSON.parse(JSON.stringify(currentSite)))
+    const { hu, en } = useSiteRaw()
+    Object.assign(form, JSON.parse(JSON.stringify(hu)))
+    Object.assign(formEn, JSON.parse(JSON.stringify(en)))
 
     const currentGallery = useGallery()
     gallery.items = JSON.parse(JSON.stringify(currentGallery.value))
@@ -84,18 +89,18 @@ async function handleSave() {
   saving.value = true
   saveMessage.value = ''
   try {
-    const sitePayload = JSON.parse(JSON.stringify(form)) as SiteContent
+    const huPayload = JSON.parse(JSON.stringify(form)) as SiteContent
+    const enPayload = JSON.parse(JSON.stringify(formEn)) as SiteContent
     const galleryPayload = JSON.parse(JSON.stringify(gallery.items)) as GalleryItem[]
-
     const newsPayload = JSON.parse(JSON.stringify(news.items)) as NewsItem[]
 
     const batch = writeBatch(db)
-    batch.set(doc(db, 'content', 'site'), sitePayload)
+    batch.set(doc(db, 'content', 'site'), { hu: huPayload, en: enPayload })
     batch.set(doc(db, 'gallery', 'items'), { items: galleryPayload })
     batch.set(doc(db, 'news', 'items'), { items: newsPayload })
     await batch.commit()
 
-    setSiteContent(sitePayload)
+    setSiteContent(huPayload, enPayload)
     setGallery(galleryPayload)
     setNews(newsPayload)
 
@@ -109,21 +114,22 @@ async function handleSave() {
 }
 
 function addPricingRow() {
+  const af = activeForm.value
   const prices: Record<string, number> = {}
-  form.pricing.categories.forEach(c => { prices[c] = 0 })
-  form.pricing.items.push({ name: '', prices })
+  af.pricing.categories.forEach(c => { prices[c] = 0 })
+  af.pricing.items.push({ name: '', prices })
 }
 
 function removePricingRow(index: number) {
-  form.pricing.items.splice(index, 1)
+  activeForm.value.pricing.items.splice(index, 1)
 }
 
 function addAddon() {
-  form.pricing.addons.push({ name: '', price: 0 })
+  activeForm.value.pricing.addons.push({ name: '', price: 0 })
 }
 
 function removeAddon(index: number) {
-  form.pricing.addons.splice(index, 1)
+  activeForm.value.pricing.addons.splice(index, 1)
 }
 
 function addPhone() {
@@ -252,8 +258,25 @@ async function handleNewsImageUpload(e: Event, item: NewsItem) {
       <div class="admin-content">
         <p v-if="loading" class="admin-info">Adatok betoltese...</p>
         <p v-else-if="loadError" class="admin-error admin-error--block">{{ loadError }}</p>
+
+        <!-- ═══ Nyelv ═══ -->
+        <div class="admin-lang-tabs">
+          <button
+            :class="['admin-lang-btn', adminLocale === 'hu' && 'admin-lang-btn--active']"
+            @click="adminLocale = 'hu'"
+          >
+            Magyar
+          </button>
+          <button
+            :class="['admin-lang-btn', adminLocale === 'en' && 'admin-lang-btn--active']"
+            @click="adminLocale = 'en'"
+          >
+            English
+          </button>
+        </div>
+
         <!-- ═══ Kapcsolat ═══ -->
-        <section class="admin-section">
+        <section v-if="adminLocale === 'hu'" class="admin-section">
           <h2 class="admin-section-title">Kapcsolat</h2>
           <div class="admin-grid">
             <label class="admin-field">
@@ -301,29 +324,29 @@ async function handleNewsImageUpload(e: Event, item: NewsItem) {
           <div class="admin-grid">
             <label class="admin-field">
               <span class="admin-label">Hétköznap napok</span>
-              <input v-model="form.hours.weekdays.days" class="admin-input" />
+              <input v-model="activeForm.hours.weekdays.days" class="admin-input" />
             </label>
             <label class="admin-field">
               <span class="admin-label">Nyitás</span>
-              <input v-model="form.hours.weekdays.open" class="admin-input" />
+              <input v-model="form.hours.weekdays.open" class="admin-input" :disabled="adminLocale === 'en'" />
             </label>
             <label class="admin-field">
               <span class="admin-label">Zárás</span>
-              <input v-model="form.hours.weekdays.close" class="admin-input" />
+              <input v-model="form.hours.weekdays.close" class="admin-input" :disabled="adminLocale === 'en'" />
             </label>
           </div>
           <div class="admin-grid">
             <label class="admin-field">
               <span class="admin-label">Hétvége napok</span>
-              <input v-model="form.hours.weekend.days" class="admin-input" />
+              <input v-model="activeForm.hours.weekend.days" class="admin-input" />
             </label>
             <label class="admin-field">
               <span class="admin-label">Nyitás</span>
-              <input v-model="form.hours.weekend.open" class="admin-input" />
+              <input v-model="form.hours.weekend.open" class="admin-input" :disabled="adminLocale === 'en'" />
             </label>
             <label class="admin-field">
               <span class="admin-label">Zárás</span>
-              <input v-model="form.hours.weekend.close" class="admin-input" />
+              <input v-model="form.hours.weekend.close" class="admin-input" :disabled="adminLocale === 'en'" />
             </label>
           </div>
         </section>
@@ -334,23 +357,23 @@ async function handleNewsImageUpload(e: Event, item: NewsItem) {
           <div class="admin-grid">
             <label class="admin-field admin-field--full">
               <span class="admin-label">Főcím</span>
-              <input v-model="form.about.headline" class="admin-input" />
+              <input v-model="activeForm.about.headline" class="admin-input" />
             </label>
             <label class="admin-field admin-field--full">
               <span class="admin-label">Misszió</span>
-              <input v-model="form.about.mission" class="admin-input" />
+              <input v-model="activeForm.about.mission" class="admin-input" />
             </label>
             <label class="admin-field admin-field--full">
               <span class="admin-label">Alapítók bemutatkozás</span>
-              <textarea v-model="form.about.foundersIntro" class="admin-textarea" rows="4"></textarea>
+              <textarea v-model="activeForm.about.foundersIntro" class="admin-textarea" rows="4"></textarea>
             </label>
             <label class="admin-field admin-field--full">
               <span class="admin-label">Vízió</span>
-              <textarea v-model="form.about.vision" class="admin-textarea" rows="4"></textarea>
+              <textarea v-model="activeForm.about.vision" class="admin-textarea" rows="4"></textarea>
             </label>
             <label class="admin-field admin-field--full">
               <span class="admin-label">Záró idézet</span>
-              <textarea v-model="form.about.closing" class="admin-textarea" rows="3"></textarea>
+              <textarea v-model="activeForm.about.closing" class="admin-textarea" rows="3"></textarea>
             </label>
           </div>
         </section>
@@ -358,28 +381,28 @@ async function handleNewsImageUpload(e: Event, item: NewsItem) {
         <!-- ═══ Árlista ═══ -->
         <section class="admin-section">
           <h2 class="admin-section-title">Árlista</h2>
-          <div v-for="(item, i) in form.pricing.items" :key="i" class="admin-pricing-row">
+          <div v-for="(item, i) in activeForm.pricing.items" :key="i" class="admin-pricing-row">
             <div class="admin-row">
               <input v-model="item.name" class="admin-input admin-input--flex" placeholder="Jegy neve" />
-              <label class="admin-checkbox">
+              <label class="admin-checkbox" v-if="adminLocale === 'hu'">
                 <input v-model="item.highlight" type="checkbox" />
                 <span>Kiemelt</span>
               </label>
               <button class="admin-btn admin-btn--danger" @click="removePricingRow(i)">Törlés</button>
             </div>
             <div class="admin-grid admin-grid--tight">
-              <label v-for="cat in form.pricing.categories" :key="cat" class="admin-field">
+              <label v-for="cat in activeForm.pricing.categories" :key="cat" class="admin-field">
                 <span class="admin-label">{{ cat }} (Ft)</span>
-                <input v-model.number="item.prices[cat]" type="number" class="admin-input" />
+                <input v-model.number="item.prices[cat]" type="number" class="admin-input" :disabled="adminLocale === 'en'" />
               </label>
             </div>
           </div>
           <button class="admin-btn admin-btn--ghost" @click="addPricingRow">+ Jegy hozzáadása</button>
 
           <h3 class="admin-subtitle">Kiegészítők</h3>
-          <div v-for="(addon, i) in form.pricing.addons" :key="i" class="admin-row">
+          <div v-for="(addon, i) in activeForm.pricing.addons" :key="i" class="admin-row">
             <input v-model="addon.name" class="admin-input admin-input--flex" placeholder="Név" />
-            <input v-model.number="addon.price" type="number" class="admin-input" style="width: 8rem" placeholder="Ár" />
+            <input v-model.number="addon.price" type="number" class="admin-input" style="width: 8rem" placeholder="Ár" :disabled="adminLocale === 'en'" />
             <button class="admin-btn admin-btn--danger" @click="removeAddon(i)">Törlés</button>
           </div>
           <button class="admin-btn admin-btn--ghost" @click="addAddon">+ Kiegészítő</button>
@@ -391,17 +414,17 @@ async function handleNewsImageUpload(e: Event, item: NewsItem) {
           <div class="admin-grid">
             <label class="admin-field">
               <span class="admin-label">Kicker</span>
-              <input v-model="form.help.intro.kicker" class="admin-input" />
+              <input v-model="activeForm.help.intro.kicker" class="admin-input" />
             </label>
             <label class="admin-field admin-field--full">
               <span class="admin-label">Főcím</span>
-              <input v-model="form.help.intro.headline" class="admin-input" />
+              <input v-model="activeForm.help.intro.headline" class="admin-input" />
             </label>
           </div>
           <div class="admin-subsection">
             <span class="admin-label">Bekezdések</span>
-            <div v-for="(_, i) in form.help.intro.paragraphs" :key="i" class="admin-row">
-              <textarea v-model="form.help.intro.paragraphs[i]" class="admin-textarea admin-input--flex" rows="2"></textarea>
+            <div v-for="(_, i) in activeForm.help.intro.paragraphs" :key="i" class="admin-row">
+              <textarea v-model="activeForm.help.intro.paragraphs[i]" class="admin-textarea admin-input--flex" rows="2"></textarea>
             </div>
           </div>
         </section>
@@ -412,18 +435,18 @@ async function handleNewsImageUpload(e: Event, item: NewsItem) {
           <div class="admin-grid">
             <label class="admin-field">
               <span class="admin-label">Kicker</span>
-              <input v-model="form.help.markings.kicker" class="admin-input" />
+              <input v-model="activeForm.help.markings.kicker" class="admin-input" />
             </label>
             <label class="admin-field admin-field--full">
               <span class="admin-label">Főcím</span>
-              <input v-model="form.help.markings.headline" class="admin-input" />
+              <input v-model="activeForm.help.markings.headline" class="admin-input" />
             </label>
             <label class="admin-field admin-field--full">
               <span class="admin-label">Leírás</span>
-              <input v-model="form.help.markings.description" class="admin-input" />
+              <input v-model="activeForm.help.markings.description" class="admin-input" />
             </label>
           </div>
-          <div v-for="(rule, i) in form.help.markings.rules" :key="i" class="admin-subsection">
+          <div v-for="(rule, i) in activeForm.help.markings.rules" :key="i" class="admin-subsection">
             <div class="admin-grid">
               <label class="admin-field">
                 <span class="admin-label">Szabály {{ i + 1 }} — Cím</span>
@@ -440,7 +463,7 @@ async function handleNewsImageUpload(e: Event, item: NewsItem) {
         <!-- ═══ Segédlet — Nehézségi szintek ═══ -->
         <section class="admin-section">
           <h2 class="admin-section-title">Nehézségi szintek</h2>
-          <div v-for="(level, i) in form.help.difficultyLegend" :key="i" class="admin-subsection">
+          <div v-for="(level, i) in activeForm.help.difficultyLegend" :key="i" class="admin-subsection">
             <div class="admin-grid">
               <label class="admin-field">
                 <span class="admin-label">{{ level.name }}</span>
@@ -459,7 +482,12 @@ async function handleNewsImageUpload(e: Event, item: NewsItem) {
           <h2 class="admin-section-title">Hírek</h2>
           <div v-for="(item, i) in news.items" :key="item.id" class="admin-news-card">
             <div class="admin-row">
-              <input v-model="item.title" class="admin-input admin-input--flex" placeholder="Cím" />
+              <input
+                :value="adminLocale === 'hu' ? item.title : (item.titleEn ?? '')"
+                class="admin-input admin-input--flex"
+                :placeholder="adminLocale === 'hu' ? 'Cím' : 'Title (EN)'"
+                @input="adminLocale === 'hu' ? (item.title = ($event.target as HTMLInputElement).value) : (item.titleEn = ($event.target as HTMLInputElement).value)"
+              />
               <input v-model="item.date" type="date" class="admin-input" style="width: 10rem" />
               <label class="admin-checkbox">
                 <input v-model="item.published" type="checkbox" />
@@ -467,8 +495,19 @@ async function handleNewsImageUpload(e: Event, item: NewsItem) {
               </label>
               <button class="admin-btn admin-btn--danger admin-btn--sm" @click="removeNewsItem(i)">Törlés</button>
             </div>
-            <input v-model="item.subtitle" class="admin-input" placeholder="Alcím (opcionális)" />
-            <textarea v-model="item.body" class="admin-textarea" rows="3" placeholder="Szöveg"></textarea>
+            <input
+              :value="adminLocale === 'hu' ? (item.subtitle ?? '') : (item.subtitleEn ?? '')"
+              class="admin-input"
+              :placeholder="adminLocale === 'hu' ? 'Alcím (opcionális)' : 'Subtitle (EN, optional)'"
+              @input="adminLocale === 'hu' ? (item.subtitle = ($event.target as HTMLInputElement).value || undefined) : (item.subtitleEn = ($event.target as HTMLInputElement).value || undefined)"
+            />
+            <textarea
+              :value="adminLocale === 'hu' ? item.body : (item.bodyEn ?? '')"
+              class="admin-textarea"
+              rows="3"
+              :placeholder="adminLocale === 'hu' ? 'Szöveg' : 'Body text (EN)'"
+              @input="adminLocale === 'hu' ? (item.body = ($event.target as HTMLTextAreaElement).value) : (item.bodyEn = ($event.target as HTMLTextAreaElement).value)"
+            ></textarea>
             <div class="admin-news-images">
               <span class="admin-label">Képek</span>
               <div v-if="item.images && item.images.length > 0" class="admin-news-img-grid">
@@ -487,7 +526,7 @@ async function handleNewsImageUpload(e: Event, item: NewsItem) {
         </section>
 
         <!-- ═══ Galéria ═══ -->
-        <section class="admin-section">
+        <section v-if="adminLocale === 'hu'" class="admin-section">
           <h2 class="admin-section-title">Galéria</h2>
           <div class="admin-gallery-grid">
             <div v-for="(item, i) in gallery.items" :key="item.id" class="admin-gallery-card">
@@ -783,6 +822,31 @@ async function handleNewsImageUpload(e: Event, item: NewsItem) {
 .admin-btn--lg {
   padding: 0.65rem 2rem;
   font-size: 0.95rem;
+}
+
+/* Language tabs */
+.admin-lang-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.admin-lang-btn {
+  padding: 0.4rem 1.1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  background: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.admin-lang-btn--active {
+  background: #986fdd;
+  color: white;
+  border-color: #986fdd;
 }
 
 /* News */

@@ -1,11 +1,16 @@
 <script setup lang="ts">
+import { inject } from 'vue'
 import type { GalleryItem } from '@/content/gallery'
+import { siteContentKey } from '@/composables/useSiteContent'
+import { site as defaults } from '@/content/site'
 import Container from '@/components/ui/Container.vue'
 import SectionTitle from '@/components/ui/SectionTitle.vue'
 
 defineProps<{
   items: readonly GalleryItem[]
 }>()
+
+const site = inject(siteContentKey, defaults)
 
 const emit = defineEmits<{
   open: [index: number]
@@ -28,7 +33,7 @@ function gradientFor(idx: number) {
     <Container>
       <!-- Header -->
       <div class="gallery-header">
-        <SectionTitle kicker="Galéria" title="Nézz körül a termünkben" />
+        <SectionTitle :kicker="site.ui.galleryKicker" :title="site.ui.galleryTitle" />
       </div>
 
       <!-- Grid -->

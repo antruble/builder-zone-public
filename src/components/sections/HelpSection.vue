@@ -12,7 +12,7 @@ import DifficultyLegend from '@/components/sections/DifficultyLegend.vue'
 <template>
   <section id="segedlet" class="scroll-mt-28 help-section section-accent">
     <Container>
-      <SectionTitle kicker="Segédlet" />
+      <SectionTitle :kicker="site.ui.helpKicker" />
 
       <!-- ═══ Intro: Mi az a boulderezés? ═══ -->
       <div class="help-intro">
@@ -58,11 +58,9 @@ import DifficultyLegend from '@/components/sections/DifficultyLegend.vue'
       <!-- ═══ Difficulty Legend ═══ -->
       <div class="help-difficulty">
         <div class="help-difficulty-header">
-          <span class="help-kicker">Nehézségi szintek</span>
-          <h2 class="help-headline">Hat szint a kezdőtől az elitig</h2>
-          <p class="help-markings-desc">
-            Minden út jelölve van – keresd a szimbólumokat a startfogásoknál.
-          </p>
+          <span class="help-kicker">{{ site.ui.difficultyKicker }}</span>
+          <h2 class="help-headline">{{ site.ui.difficultyHeadline }}</h2>
+          <p class="help-markings-desc">{{ site.ui.difficultyDesc }}</p>
         </div>
         <DifficultyLegend :levels="site.help.difficultyLegend" />
       </div>

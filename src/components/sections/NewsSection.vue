@@ -4,9 +4,13 @@ import Container from '@/components/ui/Container.vue'
 import SectionTitle from '@/components/ui/SectionTitle.vue'
 import NewsSheet from '@/components/ui/NewsSheet.vue'
 import { newsKey } from '@/composables/useNews'
+import { siteContentKey, locale } from '@/composables/useSiteContent'
+import { site as defaults } from '@/content/site'
 import type { NewsItem } from '@/content/news'
 
 const news = inject(newsKey, ref([]))
+const site = inject(siteContentKey, defaults)
+
 const publishedNews = computed(() =>
   [...news.value].filter((n) => n.published).sort((a, b) => b.date.localeCompare(a.date)),
 )
@@ -24,13 +28,21 @@ function formatDate(iso: string): string {
   const [y, m, d] = iso.split('-')
   return `${y}.${m}.${d}.`
 }
+
+function displayTitle(item: NewsItem): string {
+  return (locale.value === 'en' && item.titleEn) ? item.titleEn : item.title
+}
+
+function displaySubtitle(item: NewsItem): string | undefined {
+  return (locale.value === 'en' && item.subtitleEn) ? item.subtitleEn : item.subtitle
+}
 </script>
 
 <template>
   <section id="hirek" class="scroll-mt-28 news-section section-neutral">
     <Container>
       <!-- Header -->
-      <SectionTitle kicker="Hírek" title="A terem hírei és közösségi frissítések egy helyen." />
+      <SectionTitle :kicker="site.nav.items[4]?.label ?? site.ui.helpKicker" :title="site.ui.newsTitle" />
 
       <!-- Real news grid -->
       <div v-if="publishedNews.length > 0" class="news-grid">
@@ -43,10 +55,10 @@ function formatDate(iso: string): string {
           <div class="news-card-accent" aria-hidden="true"></div>
 
           <span class="news-card-date">{{ formatDate(item.date) }}</span>
-          <h3 class="news-card-title">{{ item.title }}</h3>
-          <p v-if="item.subtitle" class="news-card-subtitle">{{ item.subtitle }}</p>
+          <h3 class="news-card-title">{{ displayTitle(item) }}</h3>
+          <p v-if="displaySubtitle(item)" class="news-card-subtitle">{{ displaySubtitle(item) }}</p>
 
-          <span class="news-card-cta">Tovább →</span>
+          <span class="news-card-cta">{{ site.ui.readMoreLabel }}</span>
         </button>
       </div>
 
@@ -65,7 +77,7 @@ function formatDate(iso: string): string {
 
         <div class="news-coming-soon">
           <div class="news-coming-dot" aria-hidden="true"></div>
-          <span class="news-coming-text">Hamarosan érkezik</span>
+          <span class="news-coming-text">{{ site.ui.comingSoonLabel }}</span>
         </div>
       </div>
     </Container>

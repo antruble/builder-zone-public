@@ -1,6 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
 import type { NewsItem } from '@/content/news'
+import { locale, siteContentKey } from '@/composables/useSiteContent'
+import { site as defaults } from '@/content/site'
+
+const site = inject(siteContentKey, defaults)
 
 const props = defineProps<{
   modelValue: boolean
@@ -22,6 +26,16 @@ function formatDate(iso: string): string {
 }
 
 const formattedDate = computed(() => (props.item ? formatDate(props.item.date) : ''))
+
+const sheetTitle = computed(() =>
+  props.item ? (locale.value === 'en' && props.item.titleEn ? props.item.titleEn : props.item.title) : '',
+)
+const sheetSubtitle = computed(() =>
+  props.item ? (locale.value === 'en' && props.item.subtitleEn ? props.item.subtitleEn : props.item.subtitle) : undefined,
+)
+const sheetBody = computed(() =>
+  props.item ? (locale.value === 'en' && props.item.bodyEn ? props.item.bodyEn : props.item.body) : '',
+)
 </script>
 
 <template>
@@ -35,15 +49,15 @@ const formattedDate = computed(() => (props.item ? formatDate(props.item.date) :
           <!-- Header -->
           <div class="sheet-header">
             <span class="sheet-date">{{ formattedDate }}</span>
-            <button class="sheet-close" aria-label="Bezárás" @click="close">✕</button>
+            <button class="sheet-close" :aria-label="site.ui.closeLabel" @click="close">✕</button>
           </div>
 
           <!-- Scrollable content -->
           <div class="sheet-body">
-            <h2 class="sheet-title">{{ item.title }}</h2>
-            <p v-if="item.subtitle" class="sheet-subtitle">{{ item.subtitle }}</p>
+            <h2 class="sheet-title">{{ sheetTitle }}</h2>
+            <p v-if="sheetSubtitle" class="sheet-subtitle">{{ sheetSubtitle }}</p>
 
-            <p class="sheet-text">{{ item.body }}</p>
+            <p class="sheet-text">{{ sheetBody }}</p>
 
             <!-- Images grid -->
             <div v-if="item.images && item.images.length > 0" class="sheet-images">
@@ -51,7 +65,7 @@ const formattedDate = computed(() => (props.item ? formatDate(props.item.date) :
                 v-for="(src, i) in item.images"
                 :key="i"
                 :src="src"
-                :alt="`${item.title} – kép ${i + 1}`"
+                :alt="`${item.title} – ${site.ui.photoLabel} ${i + 1}`"
                 class="sheet-image"
               />
             </div>

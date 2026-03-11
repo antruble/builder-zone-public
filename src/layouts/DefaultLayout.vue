@@ -52,6 +52,12 @@ function handleNavClick(href: string) {
   history.replaceState(null, '', href)
 }
 
+function handleLogoClick() {
+  menuOpen.value = false
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+  history.replaceState(null, '', '/')
+}
+
 onMounted(() => {
   window.addEventListener('scroll', onScroll, { passive: true })
 
@@ -90,7 +96,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
           <RouterLink
             to="/"
             class="flex items-center gap-2 shrink-0 h-full"
-            @click="menuOpen = false"
+            @click.prevent="handleLogoClick"
           >
             <!-- <span class="text-lg font-bold text-gray-900 tracking-tight uppercase">Boulder Zóna</span> -->
             <img :src="logo" alt="" class="h-full max-h-full w-auto object-contain" />

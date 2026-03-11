@@ -29,10 +29,6 @@ function gradientFor(idx: number) {
       <!-- Header -->
       <div class="gallery-header">
         <SectionTitle kicker="Galéria" title="Nézz körül a termünkben" />
-        <div class="gallery-chip">
-          <span class="gallery-chip-dot" aria-hidden="true"></span>
-          <span class="gallery-chip-text">Fotók hamarosan frissülnek</span>
-        </div>
       </div>
 
       <!-- Grid -->

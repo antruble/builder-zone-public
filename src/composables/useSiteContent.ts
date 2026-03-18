@@ -49,6 +49,22 @@ export async function fetchSiteContent(): Promise<boolean> {
             ui: { ...defaultsEn.ui, ...(en.ui ?? {}) },
           })
         }
+        // Sync missing EN pricing items from HU (prices are HUF, language-independent)
+        while (siteEn.pricing.items.length < siteHu.pricing.items.length) {
+          const i = siteEn.pricing.items.length
+          const huItem = siteHu.pricing.items[i]!
+          const enPrices: Record<string, number> = {}
+          siteEn.pricing.categories.forEach((enCat, ci) => {
+            const huCat = siteHu.pricing.categories[ci]
+            enPrices[enCat] = (huCat ? (huItem.prices[huCat] ?? 0) : 0)
+          })
+          siteEn.pricing.items.push({ name: huItem.name, prices: enPrices, highlight: huItem.highlight })
+        }
+        while (siteEn.pricing.addons.length < siteHu.pricing.addons.length) {
+          const i = siteEn.pricing.addons.length
+          const huAddon = siteHu.pricing.addons[i]!
+          siteEn.pricing.addons.push({ name: huAddon.name, price: huAddon.price })
+        }
       } else {
         // Old format: flat SiteContent (HU only) — migrate gracefully
         const hu = data as Partial<SiteContent>

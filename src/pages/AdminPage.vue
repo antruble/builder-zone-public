@@ -74,6 +74,23 @@ async function loadData() {
     Object.assign(form, JSON.parse(JSON.stringify(hu)))
     Object.assign(formEn, JSON.parse(JSON.stringify(en)))
 
+    // Ensure EN pricing items match HU count (add missing EN items by position)
+    while (formEn.pricing.items.length < form.pricing.items.length) {
+      const i = formEn.pricing.items.length
+      const huItem = form.pricing.items[i]!
+      const enPrices: Record<string, number> = {}
+      formEn.pricing.categories.forEach((enCat, ci) => {
+        const huCat = form.pricing.categories[ci]
+        enPrices[enCat] = (huCat ? huItem.prices[huCat] : 0) ?? 0
+      })
+      formEn.pricing.items.push({ name: huItem.name, prices: enPrices })
+    }
+    while (formEn.pricing.addons.length < form.pricing.addons.length) {
+      const i = formEn.pricing.addons.length
+      const huAddon = form.pricing.addons[i]!
+      formEn.pricing.addons.push({ name: huAddon.name, price: huAddon.price })
+    }
+
     const currentGallery = useGallery()
     gallery.items = JSON.parse(JSON.stringify(currentGallery.value))
 
@@ -91,6 +108,20 @@ async function handleSave() {
   try {
     const huPayload = JSON.parse(JSON.stringify(form)) as SiteContent
     const enPayload = JSON.parse(JSON.stringify(formEn)) as SiteContent
+
+    // Sync prices HU → EN by position (EN price fields are disabled, HU is canonical)
+    enPayload.pricing.items.forEach((enItem, i) => {
+      const huItem = huPayload.pricing.items[i]
+      if (!huItem) return
+      enPayload.pricing.categories.forEach((enCat, ci) => {
+        const huCat = huPayload.pricing.categories[ci]
+        if (huCat) enItem.prices[enCat] = huItem.prices[huCat] ?? 0
+      })
+    })
+    enPayload.pricing.addons.forEach((enAddon, i) => {
+      const huAddon = huPayload.pricing.addons[i]
+      if (huAddon) enAddon.price = huAddon.price
+    })
     const galleryPayload = JSON.parse(JSON.stringify(gallery.items)) as GalleryItem[]
     const newsPayload = JSON.parse(JSON.stringify(news.items)) as NewsItem[]
 
@@ -114,22 +145,28 @@ async function handleSave() {
 }
 
 function addPricingRow() {
-  const af = activeForm.value
-  const prices: Record<string, number> = {}
-  af.pricing.categories.forEach(c => { prices[c] = 0 })
-  af.pricing.items.push({ name: '', prices })
+  const huPrices: Record<string, number> = {}
+  form.pricing.categories.forEach(c => { huPrices[c] = 0 })
+  form.pricing.items.push({ name: '', prices: huPrices })
+
+  const enPrices: Record<string, number> = {}
+  formEn.pricing.categories.forEach(c => { enPrices[c] = 0 })
+  formEn.pricing.items.push({ name: '', prices: enPrices })
 }
 
 function removePricingRow(index: number) {
-  activeForm.value.pricing.items.splice(index, 1)
+  form.pricing.items.splice(index, 1)
+  formEn.pricing.items.splice(index, 1)
 }
 
 function addAddon() {
-  activeForm.value.pricing.addons.push({ name: '', price: 0 })
+  form.pricing.addons.push({ name: '', price: 0 })
+  formEn.pricing.addons.push({ name: '', price: 0 })
 }
 
 function removeAddon(index: number) {
-  activeForm.value.pricing.addons.splice(index, 1)
+  form.pricing.addons.splice(index, 1)
+  formEn.pricing.addons.splice(index, 1)
 }
 
 function addPhone() {
@@ -383,7 +420,7 @@ async function handleNewsImageUpload(e: Event, item: NewsItem) {
           <h2 class="admin-section-title">Árlista</h2>
           <div v-for="(item, i) in activeForm.pricing.items" :key="i" class="admin-pricing-row">
             <div class="admin-row">
-              <input v-model="item.name" class="admin-input admin-input--flex" placeholder="Jegy neve" />
+              <input v-model="item.name" class="admin-input admin-input--flex" :placeholder="adminLocale === 'en' ? 'English name (e.g. Family ticket)' : 'Jegy neve'" />
               <label class="admin-checkbox" v-if="adminLocale === 'hu'">
                 <input v-model="item.highlight" type="checkbox" />
                 <span>Kiemelt</span>
@@ -401,7 +438,7 @@ async function handleNewsImageUpload(e: Event, item: NewsItem) {
 
           <h3 class="admin-subtitle">Kiegészítők</h3>
           <div v-for="(addon, i) in activeForm.pricing.addons" :key="i" class="admin-row">
-            <input v-model="addon.name" class="admin-input admin-input--flex" placeholder="Név" />
+            <input v-model="addon.name" class="admin-input admin-input--flex" :placeholder="adminLocale === 'en' ? 'English name' : 'Név'" />
             <input v-model.number="addon.price" type="number" class="admin-input" style="width: 8rem" placeholder="Ár" :disabled="adminLocale === 'en'" />
             <button class="admin-btn admin-btn--danger" @click="removeAddon(i)">Törlés</button>
           </div>

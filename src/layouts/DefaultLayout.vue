@@ -6,16 +6,19 @@ import { site as defaults } from '@/content/site'
 
 const site = inject(siteContentKey, defaults)
 import logo from '@/assets/img/logo.jpeg'
-import adatvedelmPdf from '@/assets/pdfs/ADATVÉDELMI TÁJÉKOZTATÓ.pdf'
-import felelossegPdf from '@/assets/pdfs/FELELŐSSÉGKIZÁRÓ ÉS KOCKÁZATVÁLLALÓ NYILATKOZAT.pdf'
+import adatvedelmPdf from '@/assets/pdfs/ADATVÉDELMI-TÁJÉKOZTATÓ.pdf'
+import felelossegPdf from '@/assets/pdfs/FELELŐSSÉGKIZÁRÓ-ÉS-KOCKÁZATVÁLLALÓ-NYILATKOZAT.pdf'
 import hazirendPdf from '@/assets/pdfs/HÁZIREND.pdf'
+import hazirendEnPdf from '@/assets/pdfs/en/HOUSE-RULES.pdf'
+import adatvedelmEnPdf from '@/assets/pdfs/en/PRIVACY-NOTICE-DATA-PROCESSING-POLICY.pdf'
+import felelossegEnPdf from '@/assets/pdfs/en/DISCLAIMER-AND-ASSUMPTION-OF-RISK-DECLARATION.pdf'
 
 const documents = computed(() =>
   locale.value === 'en'
     ? [
-        { name: 'House Rules', href: hazirendPdf },
-        { name: 'Privacy Policy', href: adatvedelmPdf },
-        { name: 'Disclaimer', href: felelossegPdf },
+        { name: 'House Rules', href: hazirendEnPdf },
+        { name: 'Privacy Notice', href: adatvedelmEnPdf },
+        { name: 'Disclaimer', href: felelossegEnPdf },
       ]
     : [
         { name: 'Házirend', href: hazirendPdf },
@@ -112,6 +115,21 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
           </RouterLink>
 
           <div class="flex items-center gap-3">
+            <!-- Language toggle -->
+            <div class="lang-toggle">
+              <button
+                :class="['lang-btn', locale === 'hu' && 'lang-btn--active']"
+                @click="locale = 'hu'"
+              >
+                HU
+              </button>
+              <button
+                :class="['lang-btn', locale === 'en' && 'lang-btn--active']"
+                @click="locale = 'en'"
+              >
+                EN
+              </button>
+            </div>
             <div
               :class="[
                 'hidden md:flex items-center gap-1 bg-primary/90 rounded-2xl transition-all duration-300',
@@ -127,22 +145,6 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
               >
                 {{ item.label }}
               </a>
-            </div>
-
-            <!-- Language toggle -->
-            <div class="lang-toggle">
-              <button
-                :class="['lang-btn', locale === 'hu' && 'lang-btn--active']"
-                @click="locale = 'hu'"
-              >
-                HU
-              </button>
-              <button
-                :class="['lang-btn', locale === 'en' && 'lang-btn--active']"
-                @click="locale = 'en'"
-              >
-                EN
-              </button>
             </div>
           </div>
           <button
